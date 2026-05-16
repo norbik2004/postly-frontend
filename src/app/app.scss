@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  overflow-x: clip;
+}
+
+main {
+  overflow-x: clip;
+}
+
+.media-frame--section {
+  margin-top: var(--space-2xl);
+}
+
+.media-frame--section .media-slot {
+  aspect-ratio: var(--media-aspect-hero);
+  min-height: clamp(14rem, 45vw, 22rem);
+}
