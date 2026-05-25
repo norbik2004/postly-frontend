@@ -2,15 +2,15 @@ import { Component, signal } from '@angular/core';
 import { Features } from './layout/features/features';
 import { Header } from './layout/header/header';
 import { Hero } from './layout/hero/hero';
+import { Footer } from './layout/footer/footer';
 
 @Component({
   selector: 'app-root',
-  imports: [Header, Hero, Features],
+  imports: [Header, Hero, Features, Footer],
   styleUrl: './app.scss',
   template: `
     <app-header />
     <app-hero [title]="title()" />
-
     <main>
       <app-features />
 
@@ -47,6 +47,7 @@ import { Hero } from './layout/hero/hero';
         </div>
       </section>
     </main>
+    <app-footer />
   `,
 })
 export class App {
