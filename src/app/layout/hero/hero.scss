@@ -6,7 +6,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-height: clamp(26rem, 78vh, 44rem);
+  min-height: max(26rem, calc(100dvh - var(--header-offset)));
   padding: var(--section-gap) var(--container-padding);
   overflow: hidden;
 }

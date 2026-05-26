@@ -1,6 +1,12 @@
-import { Component, HostListener, OnDestroy, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, input, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-const LINKS = [
+type HeaderLink = {
+  id: string;
+  label: string;
+};
+
+const LINKS: readonly HeaderLink[] = [
   { id: 'features', label: 'Features' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
@@ -8,23 +14,40 @@ const LINKS = [
 
 @Component({
   selector: 'app-header',
+  imports: [RouterLink],
   styleUrl: './header.scss',
   template: `
     <header class="site-header" [class.is-scrolled]="scrolled()">
       <div class="header-bar">
-        <a href="#top" class="brand" (click)="go($event, 'top')">
-          <span class="brand__icon-wrap">
-            <img
-              class="brand__icon"
-              src="/postly-icon.svg"
-              alt=""
-              width="32"
-              height="32"
-              decoding="async"
-            />
-          </span>
-          <span class="brand__name">Postly</span>
-        </a>
+        @if (brandMode() === 'route') {
+          <a [routerLink]="brandRoute()" class="brand" aria-label="Go to Postly home" (click)="closeMenu()">
+            <span class="brand__icon-wrap">
+              <img
+                class="brand__icon"
+                src="/postly-icon.svg"
+                alt=""
+                width="32"
+                height="32"
+                decoding="async"
+              />
+            </span>
+            <span class="brand__name">Postly</span>
+          </a>
+        } @else {
+          <a href="#top" class="brand" (click)="go($event, 'top')">
+            <span class="brand__icon-wrap">
+              <img
+                class="brand__icon"
+                src="/postly-icon.svg"
+                alt=""
+                width="32"
+                height="32"
+                decoding="async"
+              />
+            </span>
+            <span class="brand__name">Postly</span>
+          </a>
+        }
 
         <button
           type="button"
@@ -41,7 +64,7 @@ const LINKS = [
           id="site-nav"
           class="nav"
           [class.is-open]="menuOpen()"
-          aria-label="Sections"
+          [attr.aria-label]="navLabel()"
         >
           <div class="nav-drawer-head">
             <button
@@ -53,11 +76,14 @@ const LINKS = [
               <span class="close-icon" aria-hidden="true"></span>
             </button>
           </div>
-          @for (link of links; track link.id) {
+          @for (link of links(); track link.id) {
             <a [href]="'#' + link.id" class="nav-link" (click)="go($event, link.id)">
               {{ link.label }}
             </a>
           }
+          <a [routerLink]="actionRoute()" class="btn btn--secondary" (click)="closeMenu()">
+            {{ actionLabel() }}
+          </a>
         </nav>
       </div>
 
@@ -73,7 +99,12 @@ const LINKS = [
   `,
 })
 export class Header implements OnDestroy {
-  protected readonly links = LINKS;
+  readonly links = input<readonly HeaderLink[]>(LINKS);
+  readonly actionLabel = input('Log in');
+  readonly actionRoute = input('/login');
+  readonly navLabel = input('Sections');
+  readonly brandMode = input<'scroll' | 'route'>('scroll');
+  readonly brandRoute = input('/');
   protected readonly menuOpen = signal(false);
   protected readonly scrolled = signal(false);
 

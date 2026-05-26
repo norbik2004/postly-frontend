@@ -232,6 +232,14 @@
   color: var(--mat-sys-on-surface);
 }
 
+.nav .btn {
+  min-width: 9.5rem;
+  min-height: 3.125rem;
+  padding-inline: 1.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .nav-drawer-head {
   display: none;
 }
@@ -356,6 +364,11 @@
     padding: 0.875rem 1rem;
     min-height: 3rem;
     border-radius: 0.625rem;
+  }
+
+  .nav .btn {
+    width: 100%;
+    min-width: 0;
   }
 
   .nav-link:hover {
