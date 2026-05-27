@@ -1,5 +1,8 @@
-import { Component, HostListener, OnDestroy, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, HostListener, Input, OnDestroy, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { catchError, filter, finalize, of } from 'rxjs';
+import { AuthService } from '../../services/auth';
+import { SessionService } from '../../services/session';
 
 type HeaderLink = {
   id: string;
@@ -19,8 +22,8 @@ const LINKS: readonly HeaderLink[] = [
   template: `
     <header class="site-header" [class.is-scrolled]="scrolled()">
       <div class="header-bar">
-        @if (brandMode() === 'route') {
-          <a [routerLink]="brandRoute()" class="brand" aria-label="Go to Postly home" (click)="closeMenu()">
+        @if (brandMode === 'route') {
+          <a [routerLink]="brandRoute" class="brand" aria-label="Go to Postly home" (click)="closeMenu()">
             <span class="brand__icon-wrap">
               <img
                 class="brand__icon"
@@ -64,7 +67,7 @@ const LINKS: readonly HeaderLink[] = [
           id="site-nav"
           class="nav"
           [class.is-open]="menuOpen()"
-          [attr.aria-label]="navLabel()"
+          [attr.aria-label]="navLabel"
         >
           <div class="nav-drawer-head">
             <button
@@ -76,14 +79,24 @@ const LINKS: readonly HeaderLink[] = [
               <span class="close-icon" aria-hidden="true"></span>
             </button>
           </div>
-          @for (link of links(); track link.id) {
+          @for (link of links; track link.id) {
             <a [href]="'#' + link.id" class="nav-link" (click)="go($event, link.id)">
               {{ link.label }}
             </a>
           }
-          <a [routerLink]="actionRoute()" class="btn btn--secondary" (click)="closeMenu()">
-            {{ actionLabel() }}
-          </a>
+          @if (session.loggedIn()) {
+            @if (isHomeRoute()) {
+              <a [routerLink]="'/dashboard'" class="btn btn--secondary" (click)="closeMenu()">Dashboard</a>
+            } @else {
+              <button type="button" class="btn btn--secondary" (click)="logout()">
+                Log out
+              </button>
+            }
+          } @else {
+            <a [routerLink]="actionRoute" class="btn btn--secondary" (click)="closeMenu()">
+              {{ actionLabel }}
+            </a>
+          }
         </nav>
       </div>
 
@@ -99,14 +112,20 @@ const LINKS: readonly HeaderLink[] = [
   `,
 })
 export class Header implements OnDestroy {
-  readonly links = input<readonly HeaderLink[]>(LINKS);
-  readonly actionLabel = input('Log in');
-  readonly actionRoute = input('/login');
-  readonly navLabel = input('Sections');
-  readonly brandMode = input<'scroll' | 'route'>('scroll');
-  readonly brandRoute = input('/');
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  protected readonly session = inject(SessionService);
+
+  @Input() links: readonly HeaderLink[] = LINKS;
+  @Input() actionLabel = 'Log in';
+  @Input() actionRoute = '/login';
+  @Input() navLabel = 'Sections';
+  @Input() brandMode: 'scroll' | 'route' = 'scroll';
+  @Input() brandRoute = '/';
   protected readonly menuOpen = signal(false);
   protected readonly scrolled = signal(false);
+  protected readonly isLoggingOut = signal(false);
+  protected readonly isHomeRoute = signal(false);
 
   private readonly onScroll = (): void => {
     this.scrolled.set(window.scrollY > 12);
@@ -115,6 +134,12 @@ export class Header implements OnDestroy {
   constructor() {
     this.onScroll();
     window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.session.checkOnce().subscribe();
+
+    this.isHomeRoute.set(this.router.url === '/' || this.router.url === '');
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      this.isHomeRoute.set(this.router.url === '/' || this.router.url === '');
+    });
   }
 
   ngOnDestroy(): void {
@@ -132,6 +157,21 @@ export class Header implements OnDestroy {
 
   protected closeMenu(): void {
     this.setMenuOpen(false);
+  }
+
+  protected logout(): void {
+    this.isLoggingOut.set(true);
+    this.authService
+      .logout()
+      .pipe(
+        catchError(() => of(null)),
+        finalize(() => this.isLoggingOut.set(false))
+      )
+      .subscribe(() => {
+        this.session.setLoggedOut();
+        this.closeMenu();
+        void this.router.navigateByUrl('/login');
+      });
   }
 
   protected go(event: Event, id: string): void {

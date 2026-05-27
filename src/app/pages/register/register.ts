@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -8,11 +8,15 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { Header } from '../../layout/header/header';
 import { Hero } from '../../layout/hero/hero';
+import { ApplicationError, toApplicationError } from '../../models/application-error';
+import { AuthService } from '../../services/auth';
 
 type RegisterForm = FormGroup<{
+  userName: FormControl<string>;
   email: FormControl<string>;
   password: FormControl<string>;
   repeatPassword: FormControl<string>;
@@ -57,6 +61,21 @@ const passwordsMatchValidator: ValidatorFn = (
         <form class="register-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
           <div class="register-form__intro">
             <p class="register-form__eyebrow">Account setup</p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="user-name">Username</label>
+            <input
+              id="user-name"
+              class="field__input"
+              type="text"
+              formControlName="userName"
+              autocomplete="username"
+              placeholder="yourname"
+            />
+            @if (userName.invalid && (userName.touched || userName.dirty)) {
+              <p class="field__error">Enter a username.</p>
+            }
           </div>
 
           <div class="field">
@@ -106,16 +125,18 @@ const passwordsMatchValidator: ValidatorFn = (
             }
           </div>
 
-          <button type="submit" class="btn btn--primary submit-btn">Create account</button>
+          <button type="submit" class="btn btn--primary submit-btn" [disabled]="isSubmitting()">
+            {{ isSubmitting() ? 'Creating account...' : 'Create account' }}
+          </button>
 
           <p class="auth-switch">
             Already have an account?
             <a routerLink="/login" class="auth-switch__link">Log in</a>
           </p>
 
-          @if (submitted()) {
-            <p class="form-status" role="status">
-              Registration form submitted. Connect this screen to your sign-up flow next.
+          @if (registerError(); as error) {
+            <p class="form-status form-status--error" role="alert">
+              {{ error.description }}
             </p>
           }
         </form>
@@ -124,8 +145,15 @@ const passwordsMatchValidator: ValidatorFn = (
   `,
 })
 export class RegisterPage {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   protected readonly form: RegisterForm = new FormGroup(
     {
+      userName: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
       email: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required, Validators.email],
@@ -142,7 +170,12 @@ export class RegisterPage {
     { validators: passwordsMatchValidator }
   );
 
-  protected readonly submitted = signal(false);
+  protected readonly isSubmitting = signal(false);
+  protected readonly registerError = signal<ApplicationError | null>(null);
+
+  protected get userName(): FormControl<string> {
+    return this.form.controls.userName;
+  }
 
   protected get email(): FormControl<string> {
     return this.form.controls.email;
@@ -157,13 +190,30 @@ export class RegisterPage {
   }
 
   protected submit(): void {
-    this.submitted.set(false);
+    this.registerError.set(null);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.submitted.set(true);
+    this.isSubmitting.set(true);
+
+    const { userName, email, password } = this.form.getRawValue();
+
+    this.authService
+      .register({ userName, email, password })
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => void this.router.navigateByUrl('/login'),
+        error: (error: unknown) => {
+          this.registerError.set(
+            toApplicationError(
+              error,
+              'Unable to create your account. Check your details, then try again.'
+            )
+          );
+        },
+      });
   }
 }

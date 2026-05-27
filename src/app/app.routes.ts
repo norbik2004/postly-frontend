@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { sessionGuard } from './guards/session.guard';
+import { DashboardPage } from './pages/dashboard/dashboard';
 import { HomePage } from './pages/home/home';
 import { LoginPage } from './pages/login/login';
 import { RegisterPage } from './pages/register/register';
@@ -11,10 +13,20 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginPage,
+    canActivate: [sessionGuard],
+    data: { session: { mode: 'guest' } },
   },
   {
     path: 'register',
     component: RegisterPage,
+    canActivate: [sessionGuard],
+    data: { session: { mode: 'guest' } },
+  },
+  {
+    path: 'dashboard',
+    component: DashboardPage,
+    canActivate: [sessionGuard],
+    data: { session: { mode: 'auth' } },
   },
   {
     path: '**',

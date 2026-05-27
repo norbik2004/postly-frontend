@@ -1,13 +1,16 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { Header } from '../../layout/header/header';
 import { Hero } from '../../layout/hero/hero';
+import { ApplicationError, toApplicationError } from '../../models/application-error';
+import { AuthService } from '../../services/auth';
+import { SessionService } from '../../services/session';
 
 type LoginForm = FormGroup<{
   email: FormControl<string>;
   password: FormControl<string>;
-  remember: FormControl<boolean>;
 }>;
 
 @Component({
@@ -68,23 +71,19 @@ type LoginForm = FormGroup<{
             }
           </div>
 
-          <label class="remember-me">
-            <input type="checkbox" formControlName="remember" />
-            <span>Keep me signed in</span>
-          </label>
-
           <div class="auth-actions">
-            <button type="submit" class="btn btn--primary submit-btn">Log in</button>
+            <button type="submit" class="btn btn--primary submit-btn" [disabled]="isSubmitting()">
+              {{ isSubmitting() ? 'Logging in...' : 'Log in' }}
+            </button>
           </div>
 
           <p class="auth-switch">
             New to Postly?
             <a routerLink="/register" class="auth-switch__link">Create an account</a>
           </p>
-
-          @if (submitted()) {
-            <p class="form-status" role="status">
-              Login form submitted. Connect this screen to your authentication flow next.
+          @if (loginError(); as error) {
+            <p class="form-status form-status--error" role="alert">
+              {{ error.description }}
             </p>
           }
         </form>
@@ -93,6 +92,10 @@ type LoginForm = FormGroup<{
   `,
 })
 export class LoginPage {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
+
   protected readonly form: LoginForm = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
@@ -102,10 +105,10 @@ export class LoginPage {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(8)],
     }),
-    remember: new FormControl(false, { nonNullable: true }),
   });
 
-  protected readonly submitted = signal(false);
+  protected readonly isSubmitting = signal(false);
+  protected readonly loginError = signal<ApplicationError | null>(null);
 
   protected get email(): FormControl<string> {
     return this.form.controls.email;
@@ -116,13 +119,30 @@ export class LoginPage {
   }
 
   protected submit(): void {
-    this.submitted.set(false);
+    this.loginError.set(null);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.submitted.set(true);
+    this.isSubmitting.set(true);
+
+    const { email, password } = this.form.getRawValue();
+
+    this.authService
+      .login({ email, password })
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => {
+          // Update the shared `/me` result once, then route.
+          this.session.refresh().subscribe(() => void this.router.navigateByUrl('/dashboard'));
+        },
+        error: (error: unknown) => {
+          this.loginError.set(
+            toApplicationError(error, 'Unable to log in. Check your email and password, then try again.')
+          );
+        },
+      });
   }
 }

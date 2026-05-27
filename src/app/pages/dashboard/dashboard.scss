@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background:
+    radial-gradient(
+      ellipse 70% 45% at 85% 0%,
+      color-mix(in srgb, var(--mat-sys-primary) 14%, transparent),
+      transparent 60%
+    ),
+    var(--mat-sys-surface);
+}
+
+.dashboard-shell {
+  display: grid;
+  min-height: calc(100dvh - var(--header-offset));
+  padding: var(--section-gap) var(--container-padding);
+  place-items: center;
+}
+
+.dashboard-card {
+  width: min(100%, 42rem);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--mat-sys-surface) 94%, transparent);
+  box-shadow: var(--mat-sys-level2);
+  padding: clamp(1.5rem, 5vw, 3rem);
+  text-align: center;
+}
+
+.dashboard-title {
+  margin: 0.5rem 0 0;
+  color: var(--mat-sys-on-surface);
+  font-size: var(--text-h2);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.dashboard-copy {
+  max-width: 34rem;
+  margin: var(--content-gap) auto 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--text-lead);
+  line-height: var(--leading-body);
+}

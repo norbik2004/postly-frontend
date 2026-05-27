@@ -11,6 +11,7 @@
 .site-header {
   position: relative;
   isolation: isolate;
+  border-top: 1px solid color-mix(in srgb, var(--mat-sys-primary) 18%, transparent);
   border-bottom: 1px solid transparent;
   transition:
     border-color 0.3s ease,
@@ -55,6 +56,7 @@
   }
 
   &.is-scrolled {
+    border-top-color: transparent;
     border-bottom-color: color-mix(in srgb, var(--mat-sys-outline-variant) 80%, transparent);
     box-shadow:
       0 1px 0 color-mix(in srgb, var(--mat-sys-outline-variant) 35%, transparent),
@@ -111,8 +113,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .brand__icon {
@@ -136,8 +138,8 @@
   }
 
   .brand__icon-wrap {
-    width: 2rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
 
@@ -233,9 +235,9 @@
 }
 
 .nav .btn {
-  min-width: 9.5rem;
-  min-height: 3.125rem;
-  padding-inline: 1.75rem;
+  min-width: 10.25rem;
+  min-height: 2.625rem;
+  padding: 0.5rem 2.25rem;
   border-radius: 999px;
   white-space: nowrap;
 }
