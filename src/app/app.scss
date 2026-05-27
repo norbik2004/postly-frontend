@@ -2,3 +2,31 @@
   display: block;
   min-height: 100%;
 }
+
+.development-notice {
+  position: fixed;
+  inset-block-end: 1rem;
+  inset-inline: 50% auto;
+  z-index: 1000;
+  transform: translateX(-50%);
+  max-width: min(calc(100vw - 2rem), 32rem);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat-sys-surface) 92%, transparent);
+  box-shadow: var(--mat-sys-level2);
+  color: var(--mat-sys-on-surface);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0.625rem 1rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .development-notice {
+    inset-block-end: 0.75rem;
+    font-size: 0.8125rem;
+    padding-inline: 0.875rem;
+  }
+}

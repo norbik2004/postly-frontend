@@ -6,6 +6,9 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   styleUrl: './app.scss',
   template: `
+    <aside class="development-notice" aria-label="Application status">
+      This app is in development. Current version is v0.1.0.
+    </aside>
     <router-outlet />
   `,
 })
