@@ -55,7 +55,7 @@ import { RouterLink } from '@angular/router';
   `,
 })
 export class Hero {
-  @Input() title = 'Postly';
+  @Input() title = 'ContentForge';
   @Input() eyebrow = 'Social content, elevated';
   @Input() heading: string | null = null;
   @Input() description =
@@ -68,7 +68,7 @@ export class Hero {
   @Input() secondaryActionRoute: string | null = '/login';
   @Input() secondaryActionHref: string | null = null;
   @Input() customPanel = false;
-  @Input() panelCaption = 'Postly product preview';
+  @Input() panelCaption = 'ContentForge product preview';
   @Input() panelIcon = '▣';
   @Input() panelLabel = 'Product preview';
   @Input() panelHint = 'App screenshot or hero illustration';

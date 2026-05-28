@@ -78,7 +78,7 @@ type LoginForm = FormGroup<{
           </div>
 
           <p class="auth-switch">
-            New to Postly?
+            New to ContentForge?
             <a routerLink="/register" class="auth-switch__link">Create an account</a>
           </p>
           @if (loginError(); as error) {

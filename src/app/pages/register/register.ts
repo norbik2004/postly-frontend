@@ -51,7 +51,7 @@ const passwordsMatchValidator: ValidatorFn = (
 
     <app-hero
       eyebrow="Start creating"
-      heading="Create your Postly account"
+      heading="Create your ContentForge account"
       description="Set up your workspace and start planning, drafting, and publishing in one calm flow."
       [showActions]="false"
       [customPanel]="true"

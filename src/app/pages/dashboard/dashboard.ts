@@ -18,7 +18,7 @@ import { Header } from '../../layout/header/header';
     <main class="dashboard-shell">
       <section class="dashboard-card" aria-labelledby="dashboard-title">
         <p class="section-eyebrow">Dashboard</p>
-        <h1 id="dashboard-title" class="dashboard-title">Welcome to Postly</h1>
+        <h1 id="dashboard-title" class="dashboard-title">Welcome to ContentForge</h1>
         <p class="dashboard-copy">
           You are logged in. This is a simple dashboard placeholder for the next authenticated
           features.

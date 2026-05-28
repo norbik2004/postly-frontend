@@ -23,7 +23,7 @@ const LINKS: readonly HeaderLink[] = [
     <header class="site-header" [class.is-scrolled]="scrolled()">
       <div class="header-bar">
         @if (brandMode === 'route') {
-          <a [routerLink]="brandRoute" class="brand" aria-label="Go to Postly home" (click)="closeMenu()">
+          <a [routerLink]="brandRoute" class="brand" aria-label="Go to ContentForge home" (click)="closeMenu()">
             <span class="brand__icon-wrap">
               <img
                 class="brand__icon"
@@ -34,7 +34,7 @@ const LINKS: readonly HeaderLink[] = [
                 decoding="async"
               />
             </span>
-            <span class="brand__name">Postly</span>
+            <span class="brand__name">ContentForge</span>
           </a>
         } @else {
           <a href="#top" class="brand" (click)="go($event, 'top')">
@@ -48,7 +48,7 @@ const LINKS: readonly HeaderLink[] = [
                 decoding="async"
               />
             </span>
-            <span class="brand__name">Postly</span>
+            <span class="brand__name">ContentForge</span>
           </a>
         }
 

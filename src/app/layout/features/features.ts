@@ -45,8 +45,8 @@ const SUPPORTING_FEATURES: FeatureCard[] = [
           <p class="section-eyebrow">Platform</p>
           <h2 class="section-title">Everything you need to grow on social</h2>
           <p class="section-lead">
-            Postly brings planning, AI-assisted writing, and publishing together—so your team ships
-            better content faster.
+            ContentForge brings planning, AI-assisted writing, and publishing together so your team
+            ships better content faster.
           </p>
         </header>
 

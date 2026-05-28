@@ -29,7 +29,7 @@ const FOOTER_HIGHLIGHTS = [
                 height="32"
                 decoding="async"
               />
-              <span id="footer-brand-title" class="brand-link__name">Postly</span>
+              <span id="footer-brand-title" class="brand-link__name">ContentForge</span>
             </a>
 
             <p class="footer-copy">
@@ -37,7 +37,7 @@ const FOOTER_HIGHLIGHTS = [
               modern marketing teams.
             </p>
 
-            <ul class="highlight-list" aria-label="Postly highlights">
+            <ul class="highlight-list" aria-label="ContentForge highlights">
               @for (highlight of highlights; track highlight) {
                 <li class="highlight-chip">{{ highlight }}</li>
               }
@@ -57,14 +57,14 @@ const FOOTER_HIGHLIGHTS = [
             <p class="footer-meta">Reply time: within one business day</p>
             <a
               class="footer-link footer-link--strong"
-              href="mailto:hello@postly.app?subject=Postly%20demo%20request"
+              href="mailto:hello@postly.app?subject=ContentForge%20demo%20request"
             >
               Book a demo
             </a>
           </section>
 
           <section class="footer-column footer-column--cta" aria-labelledby="footer-cta-title">
-            <p id="footer-cta-title" class="footer-heading">Why teams choose Postly</p>
+            <p id="footer-cta-title" class="footer-heading">Why teams choose ContentForge</p>
             <p class="footer-meta">
               Keep strategy, approvals, and publishing in one place so campaigns move faster with
               less back-and-forth.
@@ -73,7 +73,7 @@ const FOOTER_HIGHLIGHTS = [
         </div>
 
         <div class="footer-bottom">
-          <p>&copy; {{ currentYear }} Postly. Built for modern social teams.</p>
+          <p>&copy; {{ currentYear }} ContentForge. Built for modern social teams.</p>
           <p>Remote-first support for creators, marketers, and growing brands.</p>
         </div>
       </div>
