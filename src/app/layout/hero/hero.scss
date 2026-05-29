@@ -1,3 +1,5 @@
+@use '../../../styles/section-stars';
+
 :host {
   display: block;
 }
@@ -50,6 +52,17 @@
     color-mix(in srgb, var(--mat-sys-primary) 72%, #fff) 88%,
     color-mix(in srgb, var(--mat-sys-primary) 78%, #fff) 94%,
     var(--hero-blue) 100%
+  );
+}
+
+.hero-stars {
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 34%,
+    rgb(0 0 0 / 0.25) 46%,
+    rgb(0 0 0 / 0.65) 58%,
+    #000 72%
   );
 }
 
@@ -137,22 +150,70 @@
 }
 
 .hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-top: var(--space-2xl);
-}
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(0.625rem, 2.5vw, 0.875rem);
+  width: 100%;
+  max-width: min(100%, 26rem);
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
 
-.hero-actions .btn--primary {
-  box-shadow:
-    0 1px 0 color-mix(in srgb, var(--mat-sys-on-primary) 25%, transparent),
-    0 12px 32px color-mix(in srgb, var(--mat-sys-primary) 32%, transparent);
-}
+  .btn {
+    width: 100%;
+    min-height: clamp(2.875rem, 7vw, 3.125rem);
+    padding-inline: clamp(1.125rem, 4vw, 1.625rem);
+    font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 
-.hero-actions .btn--secondary {
-  border-color: color-mix(in srgb, var(--mat-sys-primary) 22%, var(--border-muted));
-  background: color-mix(in srgb, var(--mat-sys-surface) 55%, transparent);
-  backdrop-filter: blur(8px);
+    @media (max-width: 27.99rem) {
+      white-space: normal;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    @media (min-width: 42rem) {
+      width: auto;
+      min-width: 11rem;
+    }
+  }
+
+  .btn--primary {
+    border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--mat-sys-primary) 88%, #fff),
+      var(--mat-sys-primary)
+    );
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--mat-sys-primary) 28%, transparent);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 32px color-mix(in srgb, var(--mat-sys-primary) 34%, transparent);
+    }
+  }
+
+  .btn--secondary {
+    border: 3px solid color-mix(in srgb, var(--mat-sys-primary) 42%, var(white));
+    background: transparent;
+    box-shadow: none;
+    color:white;
+    &:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--mat-sys-primary) 65%, var(--border-muted));
+      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+      color:var(--mat-sys-primary);
+    }
+  }
+
+  @media (min-width: 28rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 42rem) {
+    display: flex;
+    flex-wrap: wrap;
+    width: auto;
+    max-width: none;
+  }
 }
 
 .media-frame--hero {
@@ -202,17 +263,6 @@
 
   .hero-title {
     max-width: 13ch;
-  }
-}
-
-@media (max-width: 30rem) {
-  .hero-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .hero-actions .btn {
-    width: 100%;
   }
 }
 

@@ -1,5 +1,13 @@
-import { Component, signal } from '@angular/core';
-import { createFeatureStars } from './features-stars';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnDestroy,
+  inject,
+} from '@angular/core';
+import { createFeatureStars } from '../shared/section-stars';
+import { createSectionStarsInteraction } from '../shared/section-stars-pointer';
 
 type FeatureCard = {
   title: string;
@@ -42,30 +50,27 @@ const FEATURES_ZIGZAG_FILL =
 @Component({
   selector: 'app-features',
   styleUrl: './features.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
       id="features"
       class="page-section features"
-      (mousemove)="onPointerMove($event)"
-      (mouseleave)="onPointerLeave()"
+      (mousemove)="starsInteraction.onPointerMove($event)"
+      (mouseleave)="starsInteraction.onPointerLeave()"
     >
-      <div class="features-stars" aria-hidden="true">
+      <div
+        class="section-stars"
+        aria-hidden="true"
+        [class.section-stars--idle]="!starsInteraction.visible()"
+      >
         @for (star of stars; track star.id) {
           <span
-            class="features-star"
-            [class.features-star--near]="nearStarIds().has(star.id)"
-            [class.features-star--glyph]="star.shape === 'star'"
-            [style.left.%]="star.x"
-            [style.top.%]="star.y"
-            [style.--star-size.px]="star.size"
-            [style.--star-opacity]="star.opacity"
-            [style.--drift-duration.s]="star.driftDuration"
-            [style.--drift-delay.s]="star.driftDelay"
-            [style.--drift-x.px]="star.driftX"
-            [style.--drift-y.px]="star.driftY"
-            [style.--twinkle-duration.s]="star.twinkleDuration"
+            class="section-star"
+            [class.section-star--near]="starsInteraction.nearStarIds().has(star.id)"
+            [class.section-star--glyph]="star.shape === 'star'"
+            [style]="star.style"
           >
-            <span class="features-star__body"></span>
+            <span class="section-star__body"></span>
           </span>
         }
       </div>
@@ -140,60 +145,23 @@ const FEATURES_ZIGZAG_FILL =
     </section>
   `,
 })
-export class Features {
+export class Features implements AfterViewInit, OnDestroy {
+  private readonly host = inject(ElementRef<HTMLElement>);
+
   protected readonly aiBenefits = AI_BENEFITS;
   protected readonly supportingFeatures = SUPPORTING_FEATURES;
   protected readonly stars = createFeatureStars();
   protected readonly zigzagFill = FEATURES_ZIGZAG_FILL;
+  protected readonly starsInteraction = createSectionStarsInteraction(this.stars);
 
-  private static readonly NEAR_RADIUS_PX = 168;
-
-  protected readonly nearStarIds = signal<ReadonlySet<number>>(new Set());
-
-  protected onPointerMove(event: MouseEvent): void {
-    const section = event.currentTarget as HTMLElement;
-    const rect = section.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) {
-      return;
+  ngAfterViewInit(): void {
+    const section = this.host.nativeElement.querySelector('section');
+    if (section instanceof HTMLElement) {
+      this.starsInteraction.attach(section);
     }
-
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-    const radiusSq = Features.NEAR_RADIUS_PX ** 2;
-    const nextNear = new Set<number>();
-
-    for (const star of this.stars) {
-      const starX = rect.left + (star.x / 100) * rect.width;
-      const starY = rect.top + (star.y / 100) * rect.height;
-      const dx = mouseX - starX;
-      const dy = mouseY - starY;
-
-      if (dx * dx + dy * dy <= radiusSq) {
-        nextNear.add(star.id);
-      }
-    }
-
-    const currentNear = this.nearStarIds();
-    if (nextNear.size === currentNear.size) {
-      let unchanged = true;
-      for (const id of nextNear) {
-        if (!currentNear.has(id)) {
-          unchanged = false;
-          break;
-        }
-      }
-      if (unchanged) {
-        return;
-      }
-    }
-
-    this.nearStarIds.set(nextNear);
   }
 
-  protected onPointerLeave(): void {
-    if (this.nearStarIds().size === 0) {
-      return;
-    }
-    this.nearStarIds.set(new Set());
+  ngOnDestroy(): void {
+    this.starsInteraction.destroy();
   }
 }

@@ -1,16 +1,48 @@
-import { Component, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  inject,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { createHeroStars } from '../shared/section-stars';
+import { createSectionStarsInteraction } from '../shared/section-stars-pointer';
 
 @Component({
   selector: 'app-hero',
   imports: [RouterLink],
   styleUrl: './hero.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.hero-host--fill]': 'fillViewport',
   },
   template: `
-    <section id="top" class="page-section hero" [class.hero--fill-viewport]="fillViewport">
+    <section
+      id="top"
+      class="page-section hero"
+      [class.hero--fill-viewport]="fillViewport"
+      (mousemove)="starsInteraction.onPointerMove($event)"
+      (mouseleave)="starsInteraction.onPointerLeave()"
+    >
       <div class="hero-bg" aria-hidden="true">
+        <div
+          class="hero-stars section-stars"
+          [class.section-stars--idle]="!starsInteraction.visible()"
+        >
+          @for (star of stars; track star.id) {
+            <span
+              class="section-star"
+              [class.section-star--near]="starsInteraction.nearStarIds().has(star.id)"
+              [class.section-star--glyph]="star.shape === 'star'"
+              [style]="star.style"
+            >
+              <span class="section-star__body"></span>
+            </span>
+          }
+        </div>
         <div class="hero-ground-glow"></div>
         <span class="hero-blob hero-blob--1"></span>
         <span class="hero-blob hero-blob--2"></span>
@@ -68,7 +100,12 @@ import { RouterLink } from '@angular/router';
     </section>
   `,
 })
-export class Hero {
+export class Hero implements AfterViewInit, OnDestroy {
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  protected readonly stars = createHeroStars();
+  protected readonly starsInteraction = createSectionStarsInteraction(this.stars);
+
   @Input() title = 'ContentForge';
   @Input() eyebrow = 'Social content, elevated';
   @Input() heading: string | null = null;
@@ -87,4 +124,15 @@ export class Hero {
   @Input() panelIcon = '▣';
   @Input() panelLabel = 'Product preview';
   @Input() panelHint = 'App screenshot or hero illustration';
+
+  ngAfterViewInit(): void {
+    const section = this.host.nativeElement.querySelector('section');
+    if (section instanceof HTMLElement) {
+      this.starsInteraction.attach(section);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.starsInteraction.destroy();
+  }
 }
