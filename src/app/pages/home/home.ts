@@ -14,7 +14,7 @@ import { Features } from '../../layout/features/features';
     <main>
       <app-features />
 
-      <section id="about" class="page-section content-section">
+      <section id="about" class="page-section content-section content-section--after-features">
         <div class="section-inner">
           <header class="section-header">
             <p class="section-eyebrow">About</p>

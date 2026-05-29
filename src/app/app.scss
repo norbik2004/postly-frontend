@@ -9,7 +9,7 @@
   inset-inline: 50% auto;
   z-index: 1000;
   transform: translateX(-50%);
-  max-width: min(calc(100vw - 2rem), 32rem);
+  max-width: 90vw;
   border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 28%, transparent);
   border-radius: 999px;
   background: color-mix(in srgb, var(--mat-sys-surface) 92%, transparent);
@@ -21,6 +21,7 @@
   padding: 0.625rem 1rem;
   pointer-events: none;
   text-align: center;
+  opacity: 0.5;
 }
 
 @media (max-width: 480px) {
@@ -28,5 +29,7 @@
     inset-block-end: 0.75rem;
     font-size: 0.8125rem;
     padding-inline: 0.875rem;
+    width: 90vw;
+    opacity: 0.5;
   }
 }

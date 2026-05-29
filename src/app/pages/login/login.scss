@@ -1,7 +1,8 @@
-:host {
-  display: block;
-}
+@use '../../../styles/auth-page' as auth-page;
 
+:host {
+  @include auth-page.page-host;
+}
 .login-panel {
   width: min(100%, 25rem);
   margin-inline: auto;
@@ -54,7 +55,7 @@
 .field {
   display: grid;
   gap: 0.25rem;
-  min-height: 4.95rem;
+  min-height: 4.5rem;
 }
 
 .field__label {

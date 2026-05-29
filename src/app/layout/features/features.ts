@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { createFeatureStars } from './features-stars';
 
 type FeatureCard = {
   title: string;
@@ -35,11 +36,40 @@ const SUPPORTING_FEATURES: FeatureCard[] = [
   },
 ];
 
+const FEATURES_ZIGZAG_FILL =
+  'M0,20 L0,7 L75,20 L150,6 L225,20 L300,7 L375,20 L450,6 L525,20 L600,7 L675,20 L750,6 L825,20 L900,7 L975,20 L1050,6 L1125,20 L1200,7 L1200,20 Z';
+
 @Component({
   selector: 'app-features',
   styleUrl: './features.scss',
   template: `
-    <section id="features" class="page-section features">
+    <section
+      id="features"
+      class="page-section features"
+      (mousemove)="onPointerMove($event)"
+      (mouseleave)="onPointerLeave()"
+    >
+      <div class="features-stars" aria-hidden="true">
+        @for (star of stars; track star.id) {
+          <span
+            class="features-star"
+            [class.features-star--near]="nearStarIds().has(star.id)"
+            [class.features-star--glyph]="star.shape === 'star'"
+            [style.left.%]="star.x"
+            [style.top.%]="star.y"
+            [style.--star-size.px]="star.size"
+            [style.--star-opacity]="star.opacity"
+            [style.--drift-duration.s]="star.driftDuration"
+            [style.--drift-delay.s]="star.driftDelay"
+            [style.--drift-x.px]="star.driftX"
+            [style.--drift-y.px]="star.driftY"
+            [style.--twinkle-duration.s]="star.twinkleDuration"
+          >
+            <span class="features-star__body"></span>
+          </span>
+        }
+      </div>
+
       <div class="section-inner">
         <header class="section-header">
           <p class="section-eyebrow">Platform</p>
@@ -96,10 +126,74 @@ const SUPPORTING_FEATURES: FeatureCard[] = [
           }
         </ul>
       </div>
+
+      <div class="features-end" aria-hidden="true">
+        <svg
+          class="features-end__svg"
+          viewBox="0 0 1200 20"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path [attr.d]="zigzagFill" />
+        </svg>
+      </div>
     </section>
   `,
 })
 export class Features {
   protected readonly aiBenefits = AI_BENEFITS;
   protected readonly supportingFeatures = SUPPORTING_FEATURES;
+  protected readonly stars = createFeatureStars();
+  protected readonly zigzagFill = FEATURES_ZIGZAG_FILL;
+
+  private static readonly NEAR_RADIUS_PX = 168;
+
+  protected readonly nearStarIds = signal<ReadonlySet<number>>(new Set());
+
+  protected onPointerMove(event: MouseEvent): void {
+    const section = event.currentTarget as HTMLElement;
+    const rect = section.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      return;
+    }
+
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+    const radiusSq = Features.NEAR_RADIUS_PX ** 2;
+    const nextNear = new Set<number>();
+
+    for (const star of this.stars) {
+      const starX = rect.left + (star.x / 100) * rect.width;
+      const starY = rect.top + (star.y / 100) * rect.height;
+      const dx = mouseX - starX;
+      const dy = mouseY - starY;
+
+      if (dx * dx + dy * dy <= radiusSq) {
+        nextNear.add(star.id);
+      }
+    }
+
+    const currentNear = this.nearStarIds();
+    if (nextNear.size === currentNear.size) {
+      let unchanged = true;
+      for (const id of nextNear) {
+        if (!currentNear.has(id)) {
+          unchanged = false;
+          break;
+        }
+      }
+      if (unchanged) {
+        return;
+      }
+    }
+
+    this.nearStarIds.set(nextNear);
+  }
+
+  protected onPointerLeave(): void {
+    if (this.nearStarIds().size === 0) {
+      return;
+    }
+    this.nearStarIds.set(new Set());
+  }
 }

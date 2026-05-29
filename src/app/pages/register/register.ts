@@ -54,6 +54,7 @@ const passwordsMatchValidator: ValidatorFn = (
       heading="Create your ContentForge account"
       description="Set up your workspace and start planning, drafting, and publishing in one calm flow."
       [showActions]="false"
+      [fillViewport]="true"
       [customPanel]="true"
       panelCaption="Register form"
     >

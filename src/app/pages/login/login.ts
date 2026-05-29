@@ -32,6 +32,7 @@ type LoginForm = FormGroup<{
       heading="Log in to your publishing hub"
       description="Jump back into drafts, approvals, and campaigns without losing momentum."
       [showActions]="false"
+      [fillViewport]="true"
       [customPanel]="true"
       panelCaption="Login form"
     >

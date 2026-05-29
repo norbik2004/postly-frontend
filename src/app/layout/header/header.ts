@@ -20,7 +20,7 @@ const LINKS: readonly HeaderLink[] = [
   imports: [RouterLink],
   styleUrl: './header.scss',
   template: `
-    <header class="site-header" [class.is-scrolled]="scrolled()">
+    <header class="site-header" [class.is-scrolled]="scrolled()" [class.is-at-top]="!scrolled()">
       <div class="header-bar">
         @if (brandMode === 'route') {
           <a [routerLink]="brandRoute" class="brand" aria-label="Go to ContentForge home" (click)="closeMenu()">

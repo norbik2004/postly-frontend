@@ -7,7 +7,7 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss',
   template: `
     <aside class="development-notice" aria-label="Application status">
-      This app is in development. Current version is v0.2.5.
+      This app is in development. Current version is v0.2.9. Not connected to the cloud-backend yet.
     </aside>
     <router-outlet />
   `,

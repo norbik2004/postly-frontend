@@ -5,19 +5,33 @@ import { RouterLink } from '@angular/router';
   selector: 'app-hero',
   imports: [RouterLink],
   styleUrl: './hero.scss',
+  host: {
+    '[class.hero-host--fill]': 'fillViewport',
+  },
   template: `
-    <section id="top" class="page-section hero">
+    <section id="top" class="page-section hero" [class.hero--fill-viewport]="fillViewport">
       <div class="hero-bg" aria-hidden="true">
+        <div class="hero-ground-glow"></div>
         <span class="hero-blob hero-blob--1"></span>
         <span class="hero-blob hero-blob--2"></span>
         <span class="hero-blob hero-blob--3"></span>
+        <span class="hero-grid" aria-hidden="true"></span>
       </div>
 
       <div class="hero-inner">
         <div class="hero-layout">
           <div class="hero-copy">
-            <p class="section-eyebrow">{{ eyebrow }}</p>
-            <h1 class="hero-title t-display">{{ heading ?? 'Create posts that connect with ' + title }}</h1>
+            <p class="hero-eyebrow">
+              <span class="hero-eyebrow__dot" aria-hidden="true"></span>
+              {{ eyebrow }}
+            </p>
+            <h1 class="hero-title t-display">
+              @if (heading) {
+                {{ heading }}
+              } @else {
+                Create posts that <span class="hero-title__accent">connect</span> with {{ title }}
+              }
+            </h1>
             <p class="hero-lead t-body">{{ description }}</p>
             @if (showActions) {
               <div class="hero-actions">
@@ -67,6 +81,7 @@ export class Hero {
   @Input() secondaryActionLabel = 'Log in';
   @Input() secondaryActionRoute: string | null = '/login';
   @Input() secondaryActionHref: string | null = null;
+  @Input() fillViewport = false;
   @Input() customPanel = false;
   @Input() panelCaption = 'ContentForge product preview';
   @Input() panelIcon = '▣';

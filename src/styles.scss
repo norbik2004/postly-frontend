@@ -18,7 +18,7 @@ html {
   height: 100%;
   scroll-behavior: smooth;
   overflow-x: clip;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
 
   @include mat.theme(
     (

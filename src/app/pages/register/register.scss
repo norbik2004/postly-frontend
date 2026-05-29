@@ -1,5 +1,7 @@
+@use '../../../styles/auth-page' as auth-page;
+
 :host {
-  display: block;
+  @include auth-page.page-host;
 }
 
 .register-panel {
@@ -54,7 +56,7 @@
 .field {
   display: grid;
   gap: 0.25rem;
-  min-height: 4.95rem;
+  min-height: 4.5rem;
 }
 
 .field__label {

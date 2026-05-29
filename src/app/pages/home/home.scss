@@ -7,6 +7,15 @@ main {
   overflow-x: clip;
 }
 
+.content-section--after-features {
+  position: relative;
+  z-index: 1;
+  margin-top: -1px;
+  border-top: none;
+  padding-top: calc(var(--section-gap) + 0.75rem);
+  background-color: var(--mat-sys-surface);
+}
+
 .media-frame--section {
   margin-top: var(--space-2xl);
 }
