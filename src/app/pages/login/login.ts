@@ -52,9 +52,11 @@ type LoginForm = FormGroup<{
               autocomplete="email"
               placeholder="you@company.com"
             />
-            @if (email.invalid && (email.touched || email.dirty)) {
-              <p class="field__error">Enter a valid email address.</p>
-            }
+            <div class="field__message" aria-live="polite">
+              @if (email.invalid && (email.touched || email.dirty)) {
+                <p class="field__error">Enter a valid email address.</p>
+              }
+            </div>
           </div>
 
           <div class="field">
@@ -67,9 +69,11 @@ type LoginForm = FormGroup<{
               autocomplete="current-password"
               placeholder="Enter your password"
             />
-            @if (password.invalid && (password.touched || password.dirty)) {
-              <p class="field__error">Password must be at least 8 characters long.</p>
-            }
+            <div class="field__message" aria-live="polite">
+              @if (password.invalid && (password.touched || password.dirty)) {
+                <p class="field__error">Password must be at least 8 characters long.</p>
+              }
+            </div>
           </div>
 
           <div class="auth-actions">
@@ -82,11 +86,13 @@ type LoginForm = FormGroup<{
             New to ContentForge?
             <a routerLink="/register" class="auth-switch__link">Create an account</a>
           </p>
-          @if (loginError(); as error) {
-            <p class="form-status form-status--error" role="alert">
-              {{ error.description }}
-            </p>
-          }
+          <div class="form-status-slot" aria-live="polite">
+            @if (loginError(); as error) {
+              <p class="form-status form-status--error" role="alert">
+                {{ error.description }}
+              </p>
+            }
+          </div>
         </form>
       </div>
     </app-hero>

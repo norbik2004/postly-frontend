@@ -13,6 +13,8 @@ export type SectionStarsConfig = {
   extraCount: number;
   minY: number;
   maxY: number;
+  sizeMin?: number;
+  sizeMax?: number;
 };
 
 export const SECTION_STAR_NEAR_RADIUS_PX = 168;
@@ -29,15 +31,23 @@ const DEFAULT_CONFIG: SectionStarsConfig = {
 const HERO_CONFIG: SectionStarsConfig = {
   gridCols: 9,
   gridRows: 11,
-  skipProbability: 0.72,
-  extraCount: 22,
-  minY: 32,
+  skipProbability: 0.66,
+  extraCount: 24,
+  minY: 50,
   maxY: 98,
+  sizeMin: 1.5,
+  sizeMax: 4,
 };
 
-function createStar(id: number, x: number, y: number): SectionStar {
+function createStar(
+  id: number,
+  x: number,
+  y: number,
+  sizeMin = 1.2,
+  sizeMax = 3.2
+): SectionStar {
   const driftSign = () => (Math.random() > 0.5 ? 1 : -1);
-  const size = Math.random() * 2 + 1.2;
+  const size = Math.random() * (sizeMax - sizeMin) + sizeMin;
   const opacity = Math.random() * 0.38 + 0.48;
   const driftDuration = Math.random() * 5 + 3.5;
   const driftDelay = Math.random() * -14;
@@ -69,7 +79,16 @@ function clampY(y: number, minY: number, maxY: number): number {
 }
 
 export function createSectionStars(config: Partial<SectionStarsConfig> = {}): SectionStar[] {
-  const { gridCols, gridRows, skipProbability, extraCount, minY, maxY } = {
+  const {
+    gridCols,
+    gridRows,
+    skipProbability,
+    extraCount,
+    minY,
+    maxY,
+    sizeMin = 1.2,
+    sizeMax = 3.2,
+  } = {
     ...DEFAULT_CONFIG,
     ...config,
   };
@@ -77,8 +96,10 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
   let id = 0;
   const cellW = 100 / gridCols;
   const cellH = 100 / gridRows;
+  const startRow = minY > 0 ? Math.ceil(minY / cellH) : 0;
+  const ySpan = maxY - minY;
 
-  for (let row = 0; row < gridRows; row++) {
+  for (let row = startRow; row < gridRows; row++) {
     for (let col = 0; col < gridCols; col++) {
       if (Math.random() > skipProbability) {
         continue;
@@ -88,7 +109,9 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
         createStar(
           id++,
           col * cellW + Math.random() * cellW,
-          clampY(row * cellH + Math.random() * cellH, minY, maxY)
+          clampY(row * cellH + Math.random() * cellH, minY, maxY),
+          sizeMin,
+          sizeMax
         )
       );
     }
@@ -96,11 +119,7 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
 
   for (let i = 0; i < extraCount; i++) {
     stars.push(
-      createStar(
-        id++,
-        Math.random() * 96 + 2,
-        clampY(Math.random() * 96 + 2, minY, maxY)
-      )
+      createStar(id++, Math.random() * 96 + 2, minY + Math.random() * ySpan, sizeMin, sizeMax)
     );
   }
 

@@ -1,4 +1,116 @@
 // Login / register: header + hero fill one screen, no page scroll
+$auth-error-line-height: 1.25;
+$auth-error-font-size: 0.8125rem;
+$auth-field-message-lines: 1;
+$auth-form-status-lines: 2;
+
+@mixin auth-form {
+  .field {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .field__label {
+    font-size: 0.95rem;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .field__input {
+    width: 100%;
+    min-height: 2.35rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 75%, transparent);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--mat-sys-surface) 90%, var(--mat-sys-surface-container-low));
+    color: var(--mat-sys-on-surface);
+    font: inherit;
+    font-size: var(--text-body-sm);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .field__input:hover {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 28%, var(--mat-sys-outline-variant));
+  }
+
+  .field__input:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 3px;
+  }
+
+  .field__input:focus {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 48%, var(--mat-sys-outline));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  }
+
+  .field__message {
+    min-height: calc(
+      #{$auth-error-font-size} * #{$auth-error-line-height} * #{$auth-field-message-lines}
+    );
+  }
+
+  .field__error,
+  .form-status {
+    margin: 0;
+    font-size: $auth-error-font-size;
+    line-height: $auth-error-line-height;
+  }
+
+  .field__error {
+    color: var(--mat-sys-error);
+    overflow-wrap: anywhere;
+  }
+
+  .form-status-slot {
+    min-height: calc(
+      #{$auth-error-font-size} * #{$auth-error-line-height} * #{$auth-form-status-lines}
+    );
+  }
+
+  .form-status {
+    color: var(--mat-sys-primary);
+  }
+
+  .form-status--error {
+    color: var(--mat-sys-error);
+  }
+
+  .submit-btn {
+    width: 100%;
+    min-height: 2.5rem;
+    padding-block: 0.55rem;
+  }
+
+  .submit-btn:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
+  .auth-switch {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .auth-switch__link {
+    color: var(--mat-sys-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+  }
+
+  .auth-switch__link:hover {
+    text-decoration: underline;
+  }
+
+  .auth-switch__link:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 3px;
+  }
+}
+
 @mixin page-host {
   display: flex;
   flex-direction: column;

@@ -3,6 +3,7 @@
 :host {
   @include auth-page.page-host;
 }
+
 .login-panel {
   width: min(100%, 25rem);
   margin-inline: auto;
@@ -26,6 +27,8 @@
   width: 100%;
   display: grid;
   gap: 0.7rem;
+
+  @include auth-page.auth-form;
 }
 
 .login-form__intro {
@@ -43,116 +46,9 @@
   color: var(--mat-sys-primary);
 }
 
-.login-form__title {
-  margin: 0;
-  font-size: var(--text-h3);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-tight);
-  color: var(--mat-sys-on-surface);
-}
-
-.field {
-  display: grid;
-  gap: 0.25rem;
-  min-height: 4.5rem;
-}
-
-.field__label {
-  font-size: 0.95rem;
-  font-weight: var(--font-weight-semibold);
-}
-
-.field__input {
-  width: 100%;
-  min-height: 2.35rem;
-  padding: 0.55rem 0.8rem;
-  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 75%, transparent);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--mat-sys-surface) 90%, var(--mat-sys-surface-container-low));
-  color: var(--mat-sys-on-surface);
-  font: inherit;
-  font-size: var(--text-body-sm);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.field__input:hover {
-  border-color: color-mix(in srgb, var(--mat-sys-primary) 28%, var(--mat-sys-outline-variant));
-}
-
-.field__input:focus-visible {
-  outline: 2px solid var(--mat-sys-primary);
-  outline-offset: 3px;
-}
-
-.field__input:focus {
-  border-color: color-mix(in srgb, var(--mat-sys-primary) 48%, var(--mat-sys-outline));
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
-}
-
-.field__error,
-.form-status {
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.25;
-}
-
-.field__error {
-  color: var(--mat-sys-error);
-  overflow-wrap: anywhere;
-}
-
-.submit-btn {
-  width: 100%;
-  min-height: 2.5rem;
-  padding-block: 0.55rem;
-}
-
-.submit-btn:disabled {
-  cursor: wait;
-  opacity: 0.72;
-}
-
 .auth-actions {
   display: grid;
   gap: 0.75rem;
-}
-
-.auth-switch {
-  margin: 0;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 0.875rem;
-  text-align: center;
-}
-
-.auth-switch__link {
-  color: var(--mat-sys-primary);
-  font-weight: var(--font-weight-semibold);
-  text-decoration: none;
-}
-
-.auth-switch__link:hover {
-  text-decoration: underline;
-}
-
-.auth-switch__link:focus-visible {
-  outline: 2px solid var(--mat-sys-primary);
-  outline-offset: 3px;
-}
-
-.form-status {
-  color: var(--mat-sys-primary);
-}
-
-.form-status--success {
-  color: var(--mat-sys-primary);
-}
-
-.form-status--error {
-  color: var(--mat-sys-error);
 }
 
 @media (max-width: 30rem) {

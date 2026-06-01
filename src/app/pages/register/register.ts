@@ -74,9 +74,11 @@ const passwordsMatchValidator: ValidatorFn = (
               autocomplete="username"
               placeholder="yourname"
             />
-            @if (userName.invalid && (userName.touched || userName.dirty)) {
-              <p class="field__error">Enter a username.</p>
-            }
+            <div class="field__message" aria-live="polite">
+              @if (userName.invalid && (userName.touched || userName.dirty)) {
+                <p class="field__error">Enter a username.</p>
+              }
+            </div>
           </div>
 
           <div class="field">
@@ -89,9 +91,11 @@ const passwordsMatchValidator: ValidatorFn = (
               autocomplete="email"
               placeholder="you@company.com"
             />
-            @if (email.invalid && (email.touched || email.dirty)) {
-              <p class="field__error">Enter a valid email address.</p>
-            }
+            <div class="field__message" aria-live="polite">
+              @if (email.invalid && (email.touched || email.dirty)) {
+                <p class="field__error">Enter a valid email address.</p>
+              }
+            </div>
           </div>
 
           <div class="field">
@@ -104,9 +108,11 @@ const passwordsMatchValidator: ValidatorFn = (
               autocomplete="new-password"
               placeholder="Create a password"
             />
-            @if (password.invalid && (password.touched || password.dirty)) {
-              <p class="field__error">Password must be at least 8 characters long.</p>
-            }
+            <div class="field__message" aria-live="polite">
+              @if (password.invalid && (password.touched || password.dirty)) {
+                <p class="field__error">Password must be at least 8 characters long.</p>
+              }
+            </div>
           </div>
 
           <div class="field">
@@ -119,11 +125,13 @@ const passwordsMatchValidator: ValidatorFn = (
               autocomplete="new-password"
               placeholder="Repeat your password"
             />
-            @if (repeatPassword.invalid && (repeatPassword.touched || repeatPassword.dirty)) {
-              <p class="field__error">Please repeat your password.</p>
-            } @else if (form.hasError('passwordMismatch') && (repeatPassword.touched || repeatPassword.dirty)) {
-              <p class="field__error">Passwords do not match.</p>
-            }
+            <div class="field__message" aria-live="polite">
+              @if (repeatPassword.invalid && (repeatPassword.touched || repeatPassword.dirty)) {
+                <p class="field__error">Please repeat your password.</p>
+              } @else if (form.hasError('passwordMismatch') && (repeatPassword.touched || repeatPassword.dirty)) {
+                <p class="field__error">Passwords do not match.</p>
+              }
+            </div>
           </div>
 
           <button type="submit" class="btn btn--primary submit-btn" [disabled]="isSubmitting()">
@@ -135,11 +143,13 @@ const passwordsMatchValidator: ValidatorFn = (
             <a routerLink="/login" class="auth-switch__link">Log in</a>
           </p>
 
-          @if (registerError(); as error) {
-            <p class="form-status form-status--error" role="alert">
-              {{ error.description }}
-            </p>
-          }
+          <div class="form-status-slot" aria-live="polite">
+            @if (registerError(); as error) {
+              <p class="form-status form-status--error" role="alert">
+                {{ error.description }}
+              </p>
+            }
+          </div>
         </form>
       </div>
     </app-hero>
