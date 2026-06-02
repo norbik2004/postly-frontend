@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.dashboard-panel {
+  width: min(100%, 48rem);
+}
+
+.dashboard-panel__title {
+  margin: 0.5rem 0 0;
+  color: var(--mat-sys-on-surface);
+  font-size: var(--text-h2);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.dashboard-panel__copy {
+  max-width: 40rem;
+  margin: var(--content-gap) 0 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--text-lead);
+  line-height: var(--leading-body);
+
+  code {
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+    color: var(--mat-sys-primary);
+    font-size: 0.92em;
+  }
+}

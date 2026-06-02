@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { sessionGuard } from './guards/session.guard';
+import { DashboardOverview } from './pages/dashboard/dashboard-overview/dashboard-overview';
+import { DashboardPosts } from './pages/dashboard/dashboard-posts/dashboard-posts';
 import { DashboardPage } from './pages/dashboard/dashboard';
 import { HomePage } from './pages/home/home';
 import { LoginPage } from './pages/login/login';
@@ -27,6 +29,16 @@ export const routes: Routes = [
     component: DashboardPage,
     canActivate: [sessionGuard],
     data: { session: { mode: 'auth' } },
+    children: [
+      {
+        path: '',
+        component: DashboardOverview,
+      },
+      {
+        path: 'posts',
+        component: DashboardPosts,
+      },
+    ],
   },
   {
     path: '**',

@@ -2,8 +2,8 @@ export type SectionStar = {
   id: number;
   x: number;
   y: number;
-  shape: 'dot' | 'star';
-  style: Record<string, string>;
+  glyph: boolean;
+  style: string;
 };
 
 export type SectionStarsConfig = {
@@ -20,19 +20,19 @@ export type SectionStarsConfig = {
 export const SECTION_STAR_NEAR_RADIUS_PX = 168;
 
 const DEFAULT_CONFIG: SectionStarsConfig = {
-  gridCols: 10,
-  gridRows: 13,
-  skipProbability: 0.74,
-  extraCount: 26,
+  gridCols: 9,
+  gridRows: 11,
+  skipProbability: 0.8,
+  extraCount: 16,
   minY: 0,
   maxY: 100,
 };
 
 const HERO_CONFIG: SectionStarsConfig = {
-  gridCols: 9,
-  gridRows: 11,
-  skipProbability: 0.66,
-  extraCount: 24,
+  gridCols: 8,
+  gridRows: 10,
+  skipProbability: 0.74,
+  extraCount: 14,
   minY: 50,
   maxY: 98,
   sizeMin: 1.5,
@@ -54,23 +54,24 @@ function createStar(
   const driftX = driftSign() * (Math.random() * 14 + 10);
   const driftY = driftSign() * (Math.random() * 14 + 10);
   const twinkleDuration = Math.random() * 2 + 1.5;
+  const glyph = Math.random() > 0.88;
 
   return {
     id,
     x,
     y,
-    shape: Math.random() > 0.78 ? 'star' : 'dot',
-    style: {
-      left: `${x}%`,
-      top: `${y}%`,
-      '--star-size': `${size}px`,
-      '--star-opacity': String(opacity),
-      '--drift-duration': `${driftDuration}s`,
-      '--drift-delay': `${driftDelay}s`,
-      '--drift-x': `${driftX}px`,
-      '--drift-y': `${driftY}px`,
-      '--twinkle-duration': `${twinkleDuration}s`,
-    },
+    glyph,
+    style: [
+      `left:${x}%`,
+      `top:${y}%`,
+      `--star-size:${size}px`,
+      `--star-opacity:${opacity}`,
+      `--drift-duration:${driftDuration}s`,
+      `--drift-delay:${driftDelay}s`,
+      `--drift-x:${driftX}px`,
+      `--drift-y:${driftY}px`,
+      `--twinkle-duration:${twinkleDuration}s`,
+    ].join(';'),
   };
 }
 
@@ -126,10 +127,6 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
   return stars;
 }
 
-export function createFeatureStars(): SectionStar[] {
-  return createSectionStars();
-}
-
 export function createHeroStars(): SectionStar[] {
   return createSectionStars(HERO_CONFIG);
 }
@@ -141,12 +138,26 @@ export function getNearStarIds(
   mouseY: number,
   radiusPx = SECTION_STAR_NEAR_RADIUS_PX
 ): Set<number> {
-  const radiusSq = radiusPx ** 2;
   const near = new Set<number>();
+  const { width, height, left, top } = rect;
+
+  if (width === 0 || height === 0) {
+    return near;
+  }
+
+  const radiusSq = radiusPx * radiusPx;
+  const pointerX = ((mouseX - left) / width) * 100;
+  const pointerY = ((mouseY - top) / height) * 100;
+  const boundX = (radiusPx / width) * 100;
+  const boundY = (radiusPx / height) * 100;
 
   for (const star of stars) {
-    const starX = rect.left + (star.x / 100) * rect.width;
-    const starY = rect.top + (star.y / 100) * rect.height;
+    if (Math.abs(star.x - pointerX) > boundX || Math.abs(star.y - pointerY) > boundY) {
+      continue;
+    }
+
+    const starX = left + (star.x / 100) * width;
+    const starY = top + (star.y / 100) * height;
     const dx = mouseX - starX;
     const dy = mouseY - starY;
 
@@ -158,7 +169,7 @@ export function getNearStarIds(
   return near;
 }
 
-export function nearStarSetsEqual(
+function nearStarSetsEqual(
   nextNear: ReadonlySet<number>,
   currentNear: ReadonlySet<number>
 ): boolean {

@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { Header } from '../../layout/header/header';
+import { DashboardSidebar } from './dashboard-sidebar/dashboard-sidebar';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [Header],
+  imports: [Header, DashboardSidebar, RouterOutlet],
   styleUrl: './dashboard.scss',
   template: `
     <app-header
@@ -15,16 +17,12 @@ import { Header } from '../../layout/header/header';
       brandRoute="/dashboard"
     />
 
-    <main class="dashboard-shell">
-      <section class="dashboard-card" aria-labelledby="dashboard-title">
-        <p class="section-eyebrow">Dashboard</p>
-        <h1 id="dashboard-title" class="dashboard-title">Welcome to ContentForge</h1>
-        <p class="dashboard-copy">
-          You are logged in. This is a simple dashboard placeholder for the next authenticated
-          features.
-        </p>
-      </section>
-    </main>
+    <div class="dashboard-layout">
+      <app-dashboard-sidebar class="dashboard-layout__sidebar" />
+      <main class="dashboard-layout__main">
+        <router-outlet />
+      </main>
+    </div>
   `,
 })
 export class DashboardPage {}

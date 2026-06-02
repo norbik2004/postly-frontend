@@ -6,8 +6,9 @@ import {
   OnDestroy,
   inject,
 } from '@angular/core';
-import { createFeatureStars } from '../shared/section-stars';
+import { createSectionStars } from '../shared/section-stars';
 import { createSectionStarsInteraction } from '../shared/section-stars-pointer';
+import { SectionStarsLayer } from '../shared/section-stars-layer';
 
 type FeatureCard = {
   title: string;
@@ -49,6 +50,7 @@ const FEATURES_ZIGZAG_FILL =
 
 @Component({
   selector: 'app-features',
+  imports: [SectionStarsLayer],
   styleUrl: './features.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -58,22 +60,11 @@ const FEATURES_ZIGZAG_FILL =
       (mousemove)="starsInteraction.onPointerMove($event)"
       (mouseleave)="starsInteraction.onPointerLeave()"
     >
-      <div
-        class="section-stars"
-        aria-hidden="true"
-        [class.section-stars--idle]="!starsInteraction.visible()"
-      >
-        @for (star of stars; track star.id) {
-          <span
-            class="section-star"
-            [class.section-star--near]="starsInteraction.nearStarIds().has(star.id)"
-            [class.section-star--glyph]="star.shape === 'star'"
-            [style]="star.style"
-          >
-            <span class="section-star__body"></span>
-          </span>
-        }
-      </div>
+      <app-section-stars-layer
+        [stars]="stars"
+        [nearIds]="starsInteraction.nearStarIds()"
+        [visible]="starsInteraction.visible()"
+      />
 
       <div class="section-inner">
         <header class="section-header">
@@ -150,7 +141,7 @@ export class Features implements AfterViewInit, OnDestroy {
 
   protected readonly aiBenefits = AI_BENEFITS;
   protected readonly supportingFeatures = SUPPORTING_FEATURES;
-  protected readonly stars = createFeatureStars();
+  protected readonly stars = createSectionStars();
   protected readonly zigzagFill = FEATURES_ZIGZAG_FILL;
   protected readonly starsInteraction = createSectionStarsInteraction(this.stars);
 

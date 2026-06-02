@@ -10,10 +10,11 @@ import {
 import { RouterLink } from '@angular/router';
 import { createHeroStars } from '../shared/section-stars';
 import { createSectionStarsInteraction } from '../shared/section-stars-pointer';
+import { SectionStarsLayer } from '../shared/section-stars-layer';
 
 @Component({
   selector: 'app-hero',
-  imports: [RouterLink],
+  imports: [RouterLink, SectionStarsLayer],
   styleUrl: './hero.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -28,26 +29,12 @@ import { createSectionStarsInteraction } from '../shared/section-stars-pointer';
       (mouseleave)="starsInteraction.onPointerLeave()"
     >
       <div class="hero-bg" aria-hidden="true">
-        <div
-          class="hero-stars section-stars"
-          [class.section-stars--idle]="!starsInteraction.visible()"
-        >
-          @for (star of stars; track star.id) {
-            <span
-              class="section-star"
-              [class.section-star--near]="starsInteraction.nearStarIds().has(star.id)"
-              [class.section-star--glyph]="star.shape === 'star'"
-              [style]="star.style"
-            >
-              <span class="section-star__body"></span>
-            </span>
-          }
-        </div>
-        <div class="hero-ground-glow"></div>
-        <span class="hero-blob hero-blob--1"></span>
-        <span class="hero-blob hero-blob--2"></span>
-        <span class="hero-blob hero-blob--3"></span>
-        <span class="hero-grid" aria-hidden="true"></span>
+        <app-section-stars-layer
+          class="hero-stars"
+          [stars]="stars"
+          [nearIds]="starsInteraction.nearStarIds()"
+          [visible]="starsInteraction.visible()"
+        />
       </div>
 
       <div class="hero-inner">

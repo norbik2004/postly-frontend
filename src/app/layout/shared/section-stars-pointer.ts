@@ -1,8 +1,10 @@
 import { signal } from '@angular/core';
-import { getNearStarIds, nearStarSetsEqual, type SectionStar } from './section-stars';
+import { getNearStarIds, type SectionStar } from './section-stars';
 
 const HOVER_CAPABLE =
   typeof matchMedia !== 'undefined' && matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+const POINTER_MOVE_EPSILON_SQ = 16;
 
 export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
   const nearStarIds = signal<ReadonlySet<number>>(new Set());
@@ -11,8 +13,9 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
   let rafId = 0;
   let pendingEvent: MouseEvent | null = null;
   let sectionEl: HTMLElement | null = null;
-  let resizeObserver: ResizeObserver | null = null;
   let intersectionObserver: IntersectionObserver | null = null;
+  let lastClientX = 0;
+  let lastClientY = 0;
 
   function flushPointerUpdate(): void {
     rafId = 0;
@@ -29,8 +32,18 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
     }
 
     const nextNear = getNearStarIds(stars, rect, event.clientX, event.clientY);
-    if (!nearStarSetsEqual(nextNear, nearStarIds())) {
+    const currentNear = nearStarIds();
+
+    if (nextNear.size !== currentNear.size) {
       nearStarIds.set(nextNear);
+      return;
+    }
+
+    for (const id of nextNear) {
+      if (!currentNear.has(id)) {
+        nearStarIds.set(nextNear);
+        return;
+      }
     }
   }
 
@@ -39,7 +52,16 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
       return;
     }
 
+    const dx = event.clientX - lastClientX;
+    const dy = event.clientY - lastClientY;
+    if (dx * dx + dy * dy < POINTER_MOVE_EPSILON_SQ) {
+      return;
+    }
+
+    lastClientX = event.clientX;
+    lastClientY = event.clientY;
     pendingEvent = event;
+
     if (rafId !== 0) {
       return;
     }
@@ -49,6 +71,9 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
 
   function onPointerLeave(): void {
     pendingEvent = null;
+    lastClientX = 0;
+    lastClientY = 0;
+
     if (rafId !== 0) {
       cancelAnimationFrame(rafId);
       rafId = 0;
@@ -81,15 +106,6 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
       );
       intersectionObserver.observe(section);
     }
-
-    if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(() => {
-        if (nearStarIds().size > 0) {
-          nearStarIds.set(new Set());
-        }
-      });
-      resizeObserver.observe(section);
-    }
   }
 
   function destroyObservers(): void {
@@ -101,8 +117,6 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
 
     intersectionObserver?.disconnect();
     intersectionObserver = null;
-    resizeObserver?.disconnect();
-    resizeObserver = null;
     sectionEl = null;
   }
 
@@ -110,6 +124,8 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
     destroyObservers();
     nearStarIds.set(new Set());
     visible.set(true);
+    lastClientX = 0;
+    lastClientY = 0;
   }
 
   return {
