@@ -1,5 +1,16 @@
 @use '../../../../styles/auth-page' as auth;
 
+$post-text-lines: 2;
+
+@mixin post-text-clamp($lines: $post-text-lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  overflow-wrap: anywhere;
+}
+
 :host {
   display: block;
   min-width: 0;
@@ -8,7 +19,8 @@
 .dashboard-posts {
   display: grid;
   gap: var(--space-xl);
-  max-width: 52rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .dashboard-posts__title {
@@ -27,42 +39,42 @@
   line-height: var(--leading-body);
 }
 
-.posts-controls {
+.posts-footer {
   @include auth.auth-form;
 
   display: grid;
-  gap: var(--space-lg);
-  padding: var(--space-lg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--mat-sys-surface) 94%, transparent);
-}
-
-.posts-controls__fields {
-  display: grid;
   gap: var(--space-md);
-
-  @media (min-width: 36rem) {
-    grid-template-columns: 1fr 1fr;
-  }
+  margin-top: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
 }
 
-.posts-controls__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
-.posts-meta {
+.posts-footer__meta {
   margin: 0;
   color: var(--mat-sys-on-surface-variant);
   font-size: var(--text-body-sm);
+}
+
+.posts-footer__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-md);
+}
+
+.field--compact {
+  min-width: 8rem;
+}
+
+.field__input--select {
+  cursor: pointer;
 }
 
 .posts-pager {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
+  margin-left: auto;
 }
 
 .posts-status {
@@ -81,9 +93,15 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 40rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .post-card {
+  min-width: 0;
   padding: var(--space-lg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -99,10 +117,14 @@
 }
 
 .post-card__title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-size: var(--text-h3);
   line-height: var(--leading-snug);
   color: var(--mat-sys-on-surface);
+
+  @include post-text-clamp(1);
 }
 
 .post-card__status {
@@ -122,14 +144,8 @@
   color: var(--mat-sys-on-surface-variant);
   font-size: var(--text-body-sm);
   line-height: var(--leading-body);
-}
 
-.post-card__body {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  @include post-text-clamp;
 }
 
 .post-card__label {

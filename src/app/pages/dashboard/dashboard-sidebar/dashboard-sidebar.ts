@@ -10,6 +10,7 @@ type DashboardNavItem = {
 const NAV_ITEMS: readonly DashboardNavItem[] = [
   { label: 'Overview', route: '/dashboard', exact: true },
   { label: 'Posts', route: '/dashboard/posts' },
+  { label: 'Prompts', route: '/dashboard/prompts' },
 ] as const;
 
 @Component({

@@ -33,18 +33,18 @@ const HERO_CONFIG: SectionStarsConfig = {
   gridRows: 10,
   skipProbability: 0.74,
   extraCount: 14,
-  minY: 50,
-  maxY: 98,
-  sizeMin: 1.5,
-  sizeMax: 4,
+  minY: 70,
+  maxY: 108,
+  sizeMin: 2.7,
+  sizeMax: 4.2,
 };
 
 function createStar(
   id: number,
   x: number,
   y: number,
-  sizeMin = 1.2,
-  sizeMax = 3.2
+  sizeMin = 2.7,
+  sizeMax = 4.2
 ): SectionStar {
   const driftSign = () => (Math.random() > 0.5 ? 1 : -1);
   const size = Math.random() * (sizeMax - sizeMin) + sizeMin;
@@ -54,7 +54,7 @@ function createStar(
   const driftX = driftSign() * (Math.random() * 14 + 10);
   const driftY = driftSign() * (Math.random() * 14 + 10);
   const twinkleDuration = Math.random() * 2 + 1.5;
-  const glyph = Math.random() > 0.88;
+  const glyph = Math.random() > 0.05;
 
   return {
     id,
@@ -87,8 +87,8 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
     extraCount,
     minY,
     maxY,
-    sizeMin = 1.2,
-    sizeMax = 3.2,
+    sizeMin = 2.2,
+    sizeMax = 4.2,
   } = {
     ...DEFAULT_CONFIG,
     ...config,

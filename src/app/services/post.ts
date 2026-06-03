@@ -9,10 +9,15 @@ export class PostService {
   private readonly http = inject(HttpClient);
   private readonly myPostsUrl = new URL('Post/myPosts', environment.backendUrl).toString();
 
-  getMyPosts(pageIndex: number, pageSize: number): Observable<PagedPostsResponse> {
+  getMyPosts(
+    pageNumber: number,
+    pageSize: number,
+    isAscending = false
+  ): Observable<PagedPostsResponse> {
     const params = new HttpParams()
-      .set('PageIndex', String(pageIndex))
-      .set('PageSize', String(pageSize));
+      .set('PageNumber', String(pageNumber))
+      .set('PageSize', String(pageSize))
+      .set('IsAscending', String(isAscending));
 
     return this.http.get<PagedPostsResponse>(this.myPostsUrl, {
       params,
