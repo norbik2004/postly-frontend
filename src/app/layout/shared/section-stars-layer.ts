@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import type { SectionStar } from './section-stars';
 
 @Component({
   selector: 'app-section-stars-layer',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'section-stars',
     '[class.section-stars--idle]': '!visible()',

@@ -6,7 +6,10 @@ const HOVER_CAPABLE =
 
 const POINTER_MOVE_EPSILON_SQ = 16;
 
-export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
+export function createSectionStarsInteraction(
+  stars: readonly SectionStar[] | (() => readonly SectionStar[])
+) {
+  const getStars = typeof stars === 'function' ? stars : () => stars;
   const nearStarIds = signal<ReadonlySet<number>>(new Set());
   const visible = signal(true);
 
@@ -31,7 +34,7 @@ export function createSectionStarsInteraction(stars: readonly SectionStar[]) {
       return;
     }
 
-    const nextNear = getNearStarIds(stars, rect, event.clientX, event.clientY);
+    const nextNear = getNearStarIds(getStars(), rect, event.clientX, event.clientY);
     const currentNear = nearStarIds();
 
     if (nextNear.size !== currentNear.size) {

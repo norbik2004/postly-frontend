@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { sessionGuard } from './guards/session.guard';
 import { DashboardOverview } from './pages/dashboard/dashboard-overview/dashboard-overview';
+import { DashboardPostDetail } from './pages/dashboard/dashboard-post-detail/dashboard-post-detail';
 import { DashboardPosts } from './pages/dashboard/dashboard-posts/dashboard-posts';
 import { DashboardPage } from './pages/dashboard/dashboard';
 import { HomePage } from './pages/home/home';
@@ -37,6 +38,10 @@ export const routes: Routes = [
       {
         path: 'posts',
         component: DashboardPosts,
+      },
+      {
+        path: 'posts/:id',
+        component: DashboardPostDetail,
       },
     ],
   },

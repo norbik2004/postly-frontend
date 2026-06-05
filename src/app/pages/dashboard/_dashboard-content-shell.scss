@@ -1,0 +1,71 @@
+@mixin main-background-fill {
+  background: #fff;
+}
+
+@mixin main-background-grid {
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--mat-sys-primary) 7%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--mat-sys-primary) 7%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 40px 40px;
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.12), transparent 94%);
+}
+
+@mixin page {
+  display: grid;
+  gap: var(--space-lg);
+  width: 100%;
+  max-width: none;
+  min-height: 100%;
+  flex: 1;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+@mixin page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+@mixin page-title {
+  margin: 0;
+  font-size: var(--text-h2);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--mat-sys-on-surface);
+}
+
+@mixin content-status {
+  margin: var(--space-sm) 0 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--text-body-sm);
+}
+
+@mixin elevated-panel {
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 24%, var(--border-subtle));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--mat-sys-surface) 58%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #fff 30%, transparent) inset,
+    0 8px 24px -16px color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+}
+
+@mixin surface-card {
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 78%, var(--mat-sys-primary) 10%);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--mat-sys-surface) 82%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 color-mix(in srgb, #fff 35%, transparent) inset;
+}

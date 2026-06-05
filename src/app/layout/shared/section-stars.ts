@@ -15,6 +15,8 @@ export type SectionStarsConfig = {
   maxY: number;
   sizeMin?: number;
   sizeMax?: number;
+  opacityMin?: number;
+  opacityMax?: number;
 };
 
 export const SECTION_STAR_NEAR_RADIUS_PX = 168;
@@ -44,11 +46,13 @@ function createStar(
   x: number,
   y: number,
   sizeMin = 2.7,
-  sizeMax = 4.2
+  sizeMax = 4.2,
+  opacityMin = 0.48,
+  opacityMax = 0.86
 ): SectionStar {
   const driftSign = () => (Math.random() > 0.5 ? 1 : -1);
   const size = Math.random() * (sizeMax - sizeMin) + sizeMin;
-  const opacity = Math.random() * 0.38 + 0.48;
+  const opacity = Math.random() * (opacityMax - opacityMin) + opacityMin;
   const driftDuration = Math.random() * 5 + 3.5;
   const driftDelay = Math.random() * -14;
   const driftX = driftSign() * (Math.random() * 14 + 10);
@@ -89,6 +93,8 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
     maxY,
     sizeMin = 2.2,
     sizeMax = 4.2,
+    opacityMin = 0.48,
+    opacityMax = 0.86,
   } = {
     ...DEFAULT_CONFIG,
     ...config,
@@ -112,7 +118,9 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
           col * cellW + Math.random() * cellW,
           clampY(row * cellH + Math.random() * cellH, minY, maxY),
           sizeMin,
-          sizeMax
+          sizeMax,
+          opacityMin,
+          opacityMax
         )
       );
     }
@@ -120,7 +128,15 @@ export function createSectionStars(config: Partial<SectionStarsConfig> = {}): Se
 
   for (let i = 0; i < extraCount; i++) {
     stars.push(
-      createStar(id++, Math.random() * 96 + 2, minY + Math.random() * ySpan, sizeMin, sizeMax)
+      createStar(
+        id++,
+        Math.random() * 96 + 2,
+        minY + Math.random() * ySpan,
+        sizeMin,
+        sizeMax,
+        opacityMin,
+        opacityMax
+      )
     );
   }
 

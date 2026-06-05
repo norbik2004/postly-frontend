@@ -139,6 +139,7 @@ export class Header implements OnDestroy {
     this.isHomeRoute.set(this.router.url === '/' || this.router.url === '');
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.isHomeRoute.set(this.router.url === '/' || this.router.url === '');
+      this.onScroll();
     });
   }
 

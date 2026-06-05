@@ -1,30 +1,72 @@
+@use './dashboard-content-shell' as shell;
+
 :host {
   display: block;
   min-height: 100dvh;
-  background:
-    radial-gradient(
-      ellipse 70% 45% at 85% 0%,
-      color-mix(in srgb, var(--mat-sys-primary) 14%, transparent),
-      transparent 60%
-    ),
-    var(--mat-sys-surface);
+  background: #fff;
+  --dashboard-header-gap: var(--space-lg);
 }
 
 .dashboard-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
-  align-items: stretch;
+  align-items: start;
   min-height: calc(100dvh - var(--header-offset));
 }
 
 .dashboard-layout__sidebar {
+  position: sticky;
+  top: var(--header-offset);
+  z-index: 2;
+  align-self: start;
   min-width: 0;
+  max-height: calc(100dvh - var(--header-offset));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .dashboard-layout__main {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-width: 0;
-  padding: var(--section-gap) var(--container-padding);
-  overflow: auto;
+  width: 100%;
+  min-height: calc(100dvh - var(--header-offset));
+  padding: var(--dashboard-header-gap) var(--container-padding) var(--space-lg);
+  overflow: visible;
+}
+
+.dashboard-layout__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  @include shell.main-background-fill;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    @include shell.main-background-grid;
+  }
+}
+
+.dashboard-layout__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+
+  > :not(router-outlet) {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+  }
 }
 
 @media (max-width: 48rem) {
@@ -34,6 +76,7 @@
   }
 
   .dashboard-layout__main {
-    padding-block: var(--space-xl);
+    padding-top: var(--dashboard-header-gap);
+    padding-bottom: var(--space-xl);
   }
 }
