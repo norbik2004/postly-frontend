@@ -6,7 +6,13 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EMPTY, finalize, map, switchMap } from 'rxjs';
 import { toApplicationError } from '../../../models/application-error';
-import { normalizePostTitle, parseHashtagSegments, type PostItem } from '../../../models/post';
+import {
+  normalizePostTitle,
+  parseHashtagSegments,
+  POST_BODY_MAX_LENGTH,
+  POST_TITLE_MAX_LENGTH,
+  type PostItem,
+} from '../../../models/post';
 import { PostService } from '../../../services/post';
 import {
   DEFAULT_POSTS_LIST_QUERY,
@@ -14,21 +20,11 @@ import {
   readPostsListQueryFromHistory,
 } from '../dashboard-posts/posts-list-query';
 
+import { POST_BODY_EMOJIS } from '../shared/post-body-emojis';
+
 type EditableField = 'title' | 'body';
 
 const SAVE_MESSAGE_DURATION_MS = 5000;
-const TITLE_MAX_LENGTH = 75;
-const BODY_MAX_LENGTH = 500;
-
-const CONTENT_EMOJIS = [
-  '😀', '😃', '😄', '😁', '😊', '🙂', '😉', '😍',
-  '🤩', '😎', '🥳', '😢', '😭', '😂', '🤣', '🙃',
-  '👍', '👎', '👏', '🙌', '🙏', '💪', '🤝', '✌️',
-  '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '✨',
-  '🔥', '⭐', '💡', '✅', '❌', '⚠️', '📌', '📝',
-  '📅', '🎉', '🚀', '💼', '📈', '📣', '💬', '📧',
-  '🌍', '☀️', '🌧️', '☕', '🍕', '🎯', '💯', '👀',
-] as const;
 
 type PostForm = FormGroup<{
   title: FormControl<string>;
@@ -288,18 +284,18 @@ export class DashboardPostDetail {
   private saveMessageTimeout: ReturnType<typeof setTimeout> | undefined;
   private bodyInputObserver: ResizeObserver | undefined;
 
-  protected readonly titleMaxLength = TITLE_MAX_LENGTH;
-  protected readonly bodyMaxLength = BODY_MAX_LENGTH;
-  protected readonly contentEmojis = CONTENT_EMOJIS;
+  protected readonly titleMaxLength = POST_TITLE_MAX_LENGTH;
+  protected readonly bodyMaxLength = POST_BODY_MAX_LENGTH;
+  protected readonly contentEmojis = POST_BODY_EMOJIS;
   protected readonly hashtagSegments = parseHashtagSegments;
   protected readonly form: PostForm = new FormGroup({
     title: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)],
+      validators: [Validators.required, Validators.maxLength(POST_TITLE_MAX_LENGTH)],
     }),
     body: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(BODY_MAX_LENGTH)],
+      validators: [Validators.required, Validators.maxLength(POST_BODY_MAX_LENGTH)],
     }),
   });
 
@@ -604,11 +600,11 @@ export class DashboardPostDetail {
   }
 
   private clampTitle(value: string): string {
-    return normalizePostTitle(value).slice(0, TITLE_MAX_LENGTH);
+    return normalizePostTitle(value).slice(0, POST_TITLE_MAX_LENGTH);
   }
 
   private clampBody(value: string): string {
-    return value.slice(0, BODY_MAX_LENGTH);
+    return value.slice(0, POST_BODY_MAX_LENGTH);
   }
 
   private showSaveMessage(message: string): void {

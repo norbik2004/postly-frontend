@@ -43,8 +43,19 @@ type PostsForm = FormGroup<{
   template: `
     <section class="dashboard-content-page dashboard-posts" aria-labelledby="dashboard-posts-title">
       <header class="dashboard-posts__header">
-        <p class="section-eyebrow dashboard-posts__eyebrow">Content</p>
-        <h1 id="dashboard-posts-title" class="dashboard-posts__title">Posts</h1>
+        <div class="dashboard-posts__header-row">
+          <div>
+            <p class="section-eyebrow dashboard-posts__eyebrow">Content</p>
+            <h1 id="dashboard-posts-title" class="dashboard-posts__title">Posts</h1>
+          </div>
+          <a
+            class="btn btn--primary dashboard-posts__add-btn"
+            [routerLink]="['/dashboard/posts/new']"
+            [state]="postsReturnState()"
+          >
+            Add post
+          </a>
+        </div>
       </header>
 
       <form

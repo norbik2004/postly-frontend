@@ -2,7 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import type { PagedPostsResponse, PostItem, PostsFilterParams, UpdatePostPayload } from '../models/post';
+import type {
+  CreatePostPayload,
+  PagedPostsResponse,
+  PostItem,
+  PostsFilterParams,
+  UpdatePostPayload,
+} from '../models/post';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
@@ -54,6 +60,12 @@ export class PostService {
 
   getPost(id: number): Observable<PostItem> {
     return this.http.get<PostItem>(`${this.postsUrl}/${id}`, {
+      withCredentials: true,
+    });
+  }
+
+  createPost(payload: CreatePostPayload): Observable<PostItem> {
+    return this.http.post<PostItem>(this.postsUrl, payload, {
       withCredentials: true,
     });
   }

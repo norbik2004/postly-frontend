@@ -99,6 +99,11 @@
   @include shell.page-title;
 }
 
+.post-detail__title--static {
+  width: 100%;
+  margin-top: var(--stack-md);
+}
+
 .post-detail__title-text {
   flex: 0 1 75%;
   max-width: 75%;

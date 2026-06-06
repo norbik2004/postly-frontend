@@ -27,6 +27,24 @@ $post-text-lines: 2;
 
 .dashboard-posts__header {
   @include shell.page-header;
+
+  width: 100%;
+}
+
+.dashboard-posts__header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.dashboard-posts__add-btn {
+  min-height: 2.5rem;
+  padding: 0.55rem 1.25rem;
+  flex-shrink: 0;
+  text-decoration: none;
 }
 
 .dashboard-posts__eyebrow {
