@@ -20,16 +20,18 @@ const FOOTER_HIGHLIGHTS = [
       <div class="footer-shell">
         <div class="footer-grid">
           <section class="footer-brand" aria-labelledby="footer-brand-title">
-            <a href="#top" class="brand-link" aria-label="Go to top">
-              <img
-                class="brand-link__icon"
-                src="/postly-icon.svg"
-                alt=""
-                width="32"
-                height="32"
-                decoding="async"
-              />
-              <span id="footer-brand-title" class="brand-link__name">ContentForge</span>
+            <a href="#top" class="brand" aria-label="Go to top">
+              <span class="brand__icon-wrap">
+                <img
+                  class="brand__icon"
+                  src="/starvia-logo.png"
+                  alt=""
+                  width="44"
+                  height="44"
+                  decoding="async"
+                />
+              </span>
+              <span id="footer-brand-title" class="brand__name">Starvia</span>
             </a>
 
             <p class="footer-copy">
@@ -37,7 +39,7 @@ const FOOTER_HIGHLIGHTS = [
               modern marketing teams.
             </p>
 
-            <ul class="highlight-list" aria-label="ContentForge highlights">
+            <ul class="highlight-list" aria-label="Starvia highlights">
               @for (highlight of highlights; track highlight) {
                 <li class="highlight-chip">{{ highlight }}</li>
               }
@@ -53,18 +55,18 @@ const FOOTER_HIGHLIGHTS = [
 
           <section class="footer-column" aria-labelledby="footer-contact-title">
             <p id="footer-contact-title" class="footer-heading">Contact</p>
-            <a class="footer-link" href="mailto:hello@postly.app">hello@postly.app</a>
+            <a class="footer-link" href="mailto:hello@starvia.pl">hello@starvia.pl</a>
             <p class="footer-meta">Reply time: within one business day</p>
             <a
               class="footer-link footer-link--strong"
-              href="mailto:hello@postly.app?subject=ContentForge%20demo%20request"
+              href="mailto:hello@starvia.pl?subject=Starvia%20demo%20request"
             >
               Book a demo
             </a>
           </section>
 
           <section class="footer-column footer-column--cta" aria-labelledby="footer-cta-title">
-            <p id="footer-cta-title" class="footer-heading">Why teams choose ContentForge</p>
+            <p id="footer-cta-title" class="footer-heading">Why teams choose Starvia</p>
             <p class="footer-meta">
               Keep strategy, approvals, and publishing in one place so campaigns move faster with
               less back-and-forth.
@@ -73,7 +75,7 @@ const FOOTER_HIGHLIGHTS = [
         </div>
 
         <div class="footer-bottom">
-          <p>&copy; {{ currentYear }} ContentForge. Built for modern social teams.</p>
+          <p>&copy; {{ currentYear }} Starvia. Built for modern social teams.</p>
           <p>Remote-first support for creators, marketers, and growing brands.</p>
         </div>
       </div>

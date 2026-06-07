@@ -14,40 +14,46 @@ const LINKS: readonly HeaderLink[] = [
   { id: 'contact', label: 'Contact' },
 ] as const;
 
+const SCROLL_STATE_THRESHOLD_PX = 12;
+
 @Component({
   selector: 'app-header',
   imports: [RouterLink],
   styleUrl: './header.scss',
+  host: {
+    '[class.is-header-hidden]': 'headerHidden()',
+  },
   template: `
     <header class="site-header" [class.is-scrolled]="scrolled()" [class.is-at-top]="!scrolled()">
-      <div class="header-bar">
+      <div class="header-shell">
+        <div class="header-bar">
         @if (brandMode === 'route') {
-          <a [routerLink]="brandRoute" class="brand" aria-label="Go to ContentForge home" (click)="closeMenu()">
+          <a [routerLink]="brandRoute" class="brand" aria-label="Go to Starvia home" (click)="closeMenu()">
             <span class="brand__icon-wrap">
               <img
                 class="brand__icon"
-                src="/postly-icon.svg"
+                src="/starvia-logo.png"
                 alt=""
-                width="32"
-                height="32"
+                width="44"
+                height="44"
                 decoding="async"
               />
             </span>
-            <span class="brand__name">ContentForge</span>
+            <span class="brand__name">Starvia</span>
           </a>
         } @else {
           <a href="#top" class="brand" (click)="go($event, 'top')">
             <span class="brand__icon-wrap">
               <img
                 class="brand__icon"
-                src="/postly-icon.svg"
+                src="/starvia-logo.png"
                 alt=""
-                width="32"
-                height="32"
+                width="44"
+                height="44"
                 decoding="async"
               />
             </span>
-            <span class="brand__name">ContentForge</span>
+            <span class="brand__name">Starvia</span>
           </a>
         }
 
@@ -61,37 +67,38 @@ const LINKS: readonly HeaderLink[] = [
           <span class="sr-only">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
           <span class="menu-icon" [class.is-open]="menuOpen()" aria-hidden="true"></span>
         </button>
-
-        <nav
-          id="site-nav"
-          class="nav"
-          [class.is-open]="menuOpen()"
-          [attr.aria-label]="navLabel"
-        >
-          <div class="nav-drawer-head">
-            <button
-              type="button"
-              class="nav-close"
-              aria-label="Close menu"
-              (click)="closeMenu()"
-            >
-              <span class="close-icon" aria-hidden="true"></span>
-            </button>
-          </div>
-          @for (link of links; track link.id) {
-            <a [href]="'#' + link.id" class="nav-link" (click)="go($event, link.id)">
-              {{ link.label }}
-            </a>
-          }
-          @if (session.loggedIn()) {
-            <a [routerLink]="'/dashboard'" class="btn btn--secondary" (click)="closeMenu()">Dashboard</a>
-          } @else {
-            <a [routerLink]="actionRoute" class="btn btn--secondary" (click)="closeMenu()">
-              {{ actionLabel }}
-            </a>
-          }
-        </nav>
+        </div>
       </div>
+
+      <nav
+        id="site-nav"
+        class="nav"
+        [class.is-open]="menuOpen()"
+        [attr.aria-label]="navLabel"
+      >
+        <div class="nav-drawer-head">
+          <button
+            type="button"
+            class="nav-close"
+            aria-label="Close menu"
+            (click)="closeMenu()"
+          >
+            <span class="close-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+        @for (link of links; track link.id) {
+          <a [href]="'#' + link.id" class="nav-link" (click)="go($event, link.id)">
+            {{ link.label }}
+          </a>
+        }
+        @if (session.loggedIn()) {
+          <a [routerLink]="'/dashboard'" class="btn btn--secondary" (click)="closeMenu()">Dashboard</a>
+        } @else {
+          <a [routerLink]="actionRoute" class="btn btn--secondary" (click)="closeMenu()">
+            {{ actionLabel }}
+          </a>
+        }
+      </nav>
 
       @if (menuOpen()) {
         <button
@@ -116,9 +123,23 @@ export class Header implements OnDestroy {
   @Input() brandRoute = '/';
   protected readonly menuOpen = signal(false);
   protected readonly scrolled = signal(false);
+  protected readonly headerHidden = signal(false);
+
+  private lastScrollY = 0;
 
   private readonly onScroll = (): void => {
-    this.scrolled.set(window.scrollY > 12);
+    const scrollY = window.scrollY;
+    this.scrolled.set(scrollY > SCROLL_STATE_THRESHOLD_PX);
+
+    if (!this.shouldAutoHideOnScroll() || this.menuOpen() || scrollY <= SCROLL_STATE_THRESHOLD_PX) {
+      this.headerHidden.set(false);
+    } else if (scrollY > this.lastScrollY) {
+      this.headerHidden.set(true);
+    } else if (scrollY < this.lastScrollY) {
+      this.headerHidden.set(false);
+    }
+
+    this.lastScrollY = scrollY;
   };
 
   constructor() {
@@ -161,5 +182,13 @@ export class Header implements OnDestroy {
   private setMenuOpen(open: boolean): void {
     this.menuOpen.set(open);
     document.body.classList.toggle('nav-open', open);
+
+    if (open) {
+      this.headerHidden.set(false);
+    }
+  }
+
+  private shouldAutoHideOnScroll(): boolean {
+    return this.brandMode === 'scroll';
   }
 }

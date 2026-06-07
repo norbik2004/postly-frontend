@@ -55,7 +55,7 @@ html {
   /* —— Layout —— */
   --container-max: 80rem;
   --container-padding: clamp(1.25rem, 4vw, 3rem);
-  --header-offset: 4.75rem;
+  --header-offset: 4.25rem;
 
   /* —— Surfaces & media —— */
   --border-subtle: color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
@@ -71,6 +71,6 @@ html {
 
 @media (min-width: 64rem) {
   html {
-    --header-offset: 5.5rem;
+    --header-offset: 4.75rem;
   }
 }

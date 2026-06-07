@@ -79,16 +79,22 @@
   .dashboard-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
+    min-height: 100dvh;
   }
 
   .dashboard-layout__sidebar-col {
-    position: static;
+    position: sticky;
+    top: 0;
+    z-index: 180;
     height: auto;
+    border-inline-end: none;
+    border-bottom: 1px solid var(--border-subtle);
+    background: #fff;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-on-surface) 6%, transparent);
   }
 
   .dashboard-layout__main {
-    min-height: auto;
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-xl);
+    min-height: 0;
+    padding: var(--space-md) var(--space-md) var(--space-xl);
   }
 }

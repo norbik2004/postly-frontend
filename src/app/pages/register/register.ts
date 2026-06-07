@@ -51,7 +51,7 @@ const passwordsMatchValidator: ValidatorFn = (
 
     <app-hero
       eyebrow="Start creating"
-      heading="Create your ContentForge account"
+      heading="Create your Starvia account"
       description="Set up your workspace and start planning, drafting, and publishing in one calm flow."
       [showActions]="false"
       [fillViewport]="true"

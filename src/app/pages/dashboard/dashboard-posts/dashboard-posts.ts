@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, take } from 'rxjs';
@@ -48,24 +48,58 @@ type PostsForm = FormGroup<{
             <div class="dashboard-posts__header-copy">
               <p class="section-eyebrow dashboard-posts__eyebrow">Content</p>
               <h1 id="dashboard-posts-title" class="dashboard-posts__title">Posts</h1>
+              <a
+                class="dashboard-posts__add-btn"
+                [routerLink]="['/dashboard/posts/new']"
+                [state]="postsReturnState()"
+              >
+                <span class="material-icons dashboard-posts__add-icon" aria-hidden="true">add</span>
+                Add post
+              </a>
             </div>
-            <a
-              class="dashboard-posts__add-btn"
-              [routerLink]="['/dashboard/posts/new']"
-              [state]="postsReturnState()"
-            >
-              <span class="material-icons dashboard-posts__add-icon" aria-hidden="true">add</span>
-              Add post
-            </a>
           </div>
         </header>
 
+        <div class="posts-filters__mobile-bar">
+          <button
+            type="button"
+            class="posts-filters__toggle"
+            [attr.aria-expanded]="filtersOpen()"
+            aria-controls="posts-filters-panel"
+            (click)="toggleFilters()"
+          >
+            <span class="material-icons posts-filters__toggle-icon" aria-hidden="true">tune</span>
+            Filters
+            @if (filtersActive()) {
+              <span class="posts-filters__active-badge" aria-label="Filters active">Active</span>
+            }
+          </button>
+        </div>
+
+        @if (filtersOpen()) {
+          <button
+            type="button"
+            class="posts-filters__backdrop"
+            aria-label="Close filters"
+            (click)="closeFilters()"
+          ></button>
+        }
+
         <form
+          id="posts-filters-panel"
           class="posts-filters"
+          [class.is-open]="filtersOpen()"
           [formGroup]="form"
           (ngSubmit)="applyFilters()"
           aria-label="Filter posts"
         >
+          <div class="posts-filters__drawer-head">
+            <h2 class="posts-filters__drawer-title">Filters</h2>
+            <button type="button" class="posts-filters__close" aria-label="Close filters" (click)="closeFilters()">
+              <span class="posts-filters__close-icon" aria-hidden="true"></span>
+            </button>
+          </div>
+
           <div class="posts-filters__grid">
             <div class="posts-filters__row posts-filters__row--meta">
             <div class="field field--compact">
@@ -190,19 +224,19 @@ type PostsForm = FormGroup<{
                 formControlName="createdBefore"
               />
             </div>
-
-            <div class="posts-filters__actions">
-              <button type="submit" class="btn btn--primary" [disabled]="isLoading()">Apply filters</button>
-              <button
-                type="button"
-                class="btn btn--secondary"
-                [disabled]="isLoading() || !filtersActive()"
-                (click)="clearFilters()"
-              >
-                Clear filters
-              </button>
-            </div>
           </div>
+          </div>
+
+          <div class="posts-filters__actions">
+            <button type="submit" class="btn btn--primary" [disabled]="isLoading()">Apply filters</button>
+            <button
+              type="button"
+              class="btn btn--secondary"
+              [disabled]="isLoading() || !filtersActive()"
+              (click)="clearFilters()"
+            >
+              Clear filters
+            </button>
           </div>
         </form>
       </div>
@@ -325,6 +359,7 @@ export class DashboardPosts {
   private readonly postService = inject(PostService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   protected readonly postStatuses = POST_STATUSES;
@@ -355,6 +390,7 @@ export class DashboardPosts {
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly result = signal<PagedPostsResponse | null>(null);
+  protected readonly filtersOpen = signal(false);
 
   constructor() {
     this.route.queryParamMap.pipe(take(1)).subscribe((params) => {
@@ -362,6 +398,23 @@ export class DashboardPosts {
       this.applyListQuery(query);
       this.loadPosts();
     });
+
+    this.destroyRef.onDestroy(() => {
+      document.body.classList.remove('posts-filters-open');
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    this.closeFilters();
+  }
+
+  protected toggleFilters(): void {
+    this.setFiltersOpen(!this.filtersOpen());
+  }
+
+  protected closeFilters(): void {
+    this.setFiltersOpen(false);
   }
 
   protected postsReturnState(): { postsReturn: PostsListQuery } {
@@ -375,6 +428,7 @@ export class DashboardPosts {
   protected applyFilters(): void {
     this.form.patchValue({ pageNumber: 1 });
     this.loadPosts();
+    this.closeFilters();
   }
 
   protected setSortOrder(order: SortOrder): void {
@@ -395,6 +449,7 @@ export class DashboardPosts {
       createdBefore: DEFAULT_POSTS_LIST_QUERY.createdBefore,
     });
     this.loadPosts();
+    this.closeFilters();
   }
 
   protected onPageSizeChange(): void {
@@ -501,5 +556,10 @@ export class DashboardPosts {
       queryParams: postsListQueryToParams(this.currentListQuery()),
       replaceUrl: true,
     });
+  }
+
+  private setFiltersOpen(open: boolean): void {
+    this.filtersOpen.set(open);
+    document.body.classList.toggle('posts-filters-open', open);
   }
 }

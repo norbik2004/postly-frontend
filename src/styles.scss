@@ -69,8 +69,16 @@ video {
   border: 0;
 }
 
-body.nav-open {
+body.nav-open,
+body.dashboard-nav-open,
+body.posts-filters-open {
   overflow: hidden;
+}
+
+@media (max-width: 48rem) {
+  body.posts-filters-open .dashboard-layout__main {
+    z-index: 250;
+  }
 }
 
 .page-section {

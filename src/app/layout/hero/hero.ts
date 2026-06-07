@@ -93,7 +93,7 @@ export class Hero implements AfterViewInit, OnDestroy {
   protected readonly stars = createHeroStars();
   protected readonly starsInteraction = createSectionStarsInteraction(this.stars);
 
-  @Input() title = 'ContentForge';
+  @Input() title = 'Starvia';
   @Input() eyebrow = 'Social content, elevated';
   @Input() heading: string | null = null;
   @Input() description =
@@ -107,7 +107,7 @@ export class Hero implements AfterViewInit, OnDestroy {
   @Input() secondaryActionHref: string | null = null;
   @Input() fillViewport = false;
   @Input() customPanel = false;
-  @Input() panelCaption = 'ContentForge product preview';
+  @Input() panelCaption = 'Starvia product preview';
   @Input() panelIcon = '▣';
   @Input() panelLabel = 'Product preview';
   @Input() panelHint = 'App screenshot or hero illustration';

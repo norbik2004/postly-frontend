@@ -1,0 +1,66 @@
+@mixin link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--text-brand);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+  padding-block: 0.125rem;
+
+  &:hover {
+    color: var(--mat-sys-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 3px;
+  }
+}
+
+@mixin icon-wrap {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin icon($size: 2.75rem) {
+  display: block;
+  width: $size;
+  height: $size;
+  object-fit: contain;
+}
+
+@mixin name {
+  font-size: 0.72em;
+  line-height: 1;
+}
+
+@mixin block($large-icon-at: null) {
+  .brand {
+    @include link;
+  }
+
+  .brand__icon-wrap {
+    @include icon-wrap;
+  }
+
+  .brand__icon {
+    @include icon;
+  }
+
+  .brand__name {
+    @include name;
+  }
+
+  @if $large-icon-at {
+    @media (min-width: $large-icon-at) {
+      .brand__icon {
+        @include icon(3rem);
+      }
+    }
+  }
+}

@@ -1,3 +1,7 @@
+@use '../../../styles/brand' as brand;
+
+@include brand.block;
+
 :host {
   display: block;
 }
@@ -52,25 +56,6 @@
   min-width: 0;
 }
 
-.brand-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--mat-sys-on-surface);
-  text-decoration: none;
-  font-size: var(--text-h3);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1;
-}
-
-.brand-link__icon {
-  display: block;
-  width: 2rem;
-  height: 2rem;
-  object-fit: contain;
-}
-
 .footer-copy {
   max-width: 32rem;
   margin: var(--space-md) 0 0;
@@ -118,8 +103,7 @@
   transition: color 0.2s ease;
 }
 
-.footer-link:hover,
-.brand-link:hover {
+.footer-link:hover {
   color: var(--mat-sys-primary);
 }
 
@@ -157,7 +141,6 @@
   margin: 0;
 }
 
-.brand-link:focus-visible,
 .footer-link:focus-visible {
   outline: 2px solid var(--mat-sys-primary);
   outline-offset: 3px;

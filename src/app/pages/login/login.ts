@@ -83,7 +83,7 @@ type LoginForm = FormGroup<{
           </div>
 
           <p class="auth-switch">
-            New to ContentForge?
+            New to Starvia?
             <a routerLink="/register" class="auth-switch__link">Create an account</a>
           </p>
           <div class="form-status-slot" aria-live="polite">
