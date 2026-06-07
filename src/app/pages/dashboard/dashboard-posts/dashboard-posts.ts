@@ -42,30 +42,32 @@ type PostsForm = FormGroup<{
   styleUrl: './dashboard-posts.scss',
   template: `
     <section class="dashboard-content-page dashboard-posts" aria-labelledby="dashboard-posts-title">
-      <header class="dashboard-posts__header">
-        <div class="dashboard-posts__header-row">
-          <div>
-            <p class="section-eyebrow dashboard-posts__eyebrow">Content</p>
-            <h1 id="dashboard-posts-title" class="dashboard-posts__title">Posts</h1>
+      <div class="dashboard-posts__intro">
+        <header class="dashboard-posts__header">
+          <div class="dashboard-posts__header-row">
+            <div class="dashboard-posts__header-copy">
+              <p class="section-eyebrow dashboard-posts__eyebrow">Content</p>
+              <h1 id="dashboard-posts-title" class="dashboard-posts__title">Posts</h1>
+            </div>
+            <a
+              class="dashboard-posts__add-btn"
+              [routerLink]="['/dashboard/posts/new']"
+              [state]="postsReturnState()"
+            >
+              <span class="material-icons dashboard-posts__add-icon" aria-hidden="true">add</span>
+              Add post
+            </a>
           </div>
-          <a
-            class="btn btn--primary dashboard-posts__add-btn"
-            [routerLink]="['/dashboard/posts/new']"
-            [state]="postsReturnState()"
-          >
-            Add post
-          </a>
-        </div>
-      </header>
+        </header>
 
-      <form
-        class="posts-filters"
-        [formGroup]="form"
-        (ngSubmit)="applyFilters()"
-        aria-label="Filter posts"
-      >
-        <div class="posts-filters__grid">
-          <div class="posts-filters__row">
+        <form
+          class="posts-filters"
+          [formGroup]="form"
+          (ngSubmit)="applyFilters()"
+          aria-label="Filter posts"
+        >
+          <div class="posts-filters__grid">
+            <div class="posts-filters__row posts-filters__row--meta">
             <div class="field field--compact">
               <label class="field__label" for="filter-sort-by">Sort</label>
               <select
@@ -144,7 +146,7 @@ type PostsForm = FormGroup<{
             </div>
           </div>
 
-          <div class="posts-filters__row">
+          <div class="posts-filters__row posts-filters__row--search">
             <div class="field field--grow">
               <label class="field__label" for="filter-title">Title contains</label>
               <input
@@ -201,8 +203,9 @@ type PostsForm = FormGroup<{
               </button>
             </div>
           </div>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
 
       @if (errorMessage()) {
         <p class="posts-status posts-status--error" role="alert">{{ errorMessage() }}</p>
@@ -218,7 +221,14 @@ type PostsForm = FormGroup<{
             {{ filtersActive() ? 'No posts match your filters.' : 'No posts yet.' }}
           </p>
         } @else {
-          <ul class="posts-list">
+          <div class="posts-board">
+            <div class="posts-board__head">
+              <p class="posts-board__count" aria-live="polite">
+                <strong>{{ page.items.length }}</strong>
+                {{ page.items.length === 1 ? 'post' : 'posts' }} on this page
+              </p>
+            </div>
+            <ul class="posts-list">
             @for (post of page.items; track post.id) {
               <li>
                 <a
@@ -230,11 +240,6 @@ type PostsForm = FormGroup<{
                     <h2 class="post-card__title">{{ post.title || 'Untitled' }}</h2>
                     <span class="post-card__status">{{ post.status }}</span>
                   </div>
-                  @if (post.promptText) {
-                    <p class="post-card__prompt">
-                      <span class="post-card__label">Prompt:</span> {{ post.promptText }}
-                    </p>
-                  }
                   @if (post.body) {
                     <p class="post-card__body">
                       @for (segment of hashtagSegments(post.body); track $index) {
@@ -246,62 +251,72 @@ type PostsForm = FormGroup<{
                       }
                     </p>
                   }
+                  @else {
+                    <p class="post-card__body">No content yet.</p>
+                  }
+                  @if (post.promptText) {
+                    <p class="post-card__prompt">
+                      <span class="post-card__label">Prompt:</span> {{ post.promptText }}
+                    </p>
+                  }
                   <p class="post-card__meta">
                     <time [attr.datetime]="post.createdAt">{{ post.createdAt | date: 'medium' }}</time>
                   </p>
                 </a>
               </li>
             }
-          </ul>
+            </ul>
+          </div>
         }
       }
 
       <footer class="posts-footer" [formGroup]="form" aria-label="Posts pagination">
         @if (result(); as page) {
-          <p class="posts-footer__meta" aria-live="polite">
-            Page <strong>{{ page.pageIndex }}</strong>
-            @if (page.totalPages > 0) {
-              of <strong>{{ page.totalPages }}</strong>
-            }
-            · {{ page.items.length }} on this page
-          </p>
-        }
-
-        <div class="posts-footer__controls">
-          <div class="field field--compact">
-            <label class="field__label" for="pageSize">Per page</label>
-            <select
-              id="pageSize"
-              class="field__input field__input--select"
-              formControlName="pageSize"
-              [disabled]="isLoading()"
-              (change)="onPageSizeChange()"
-            >
-              @for (size of pageSizeOptions; track size) {
-                <option [value]="size">{{ size }}</option>
+          <div class="posts-footer__row">
+            <p class="posts-footer__meta" aria-live="polite">
+              Page <strong>{{ page.pageIndex }}</strong>
+              @if (page.totalPages > 0) {
+                of <strong>{{ page.totalPages }}</strong>
               }
-            </select>
-          </div>
+            </p>
 
-          <div class="posts-pager">
-            <button
-              type="button"
-              class="btn btn--secondary"
-              [disabled]="isLoading() || !result()?.hasPreviousPage"
-              (click)="goToPrevious()"
-            >
-              Previous
-            </button>
-            <button
-              type="button"
-              class="btn btn--secondary"
-              [disabled]="isLoading() || !result()?.hasNextPage"
-              (click)="goToNext()"
-            >
-              Next
-            </button>
+            <div class="posts-footer__controls">
+              <div class="field field--compact field--inline">
+                <label class="field__label" for="pageSize">Per page</label>
+                <select
+                  id="pageSize"
+                  class="field__input field__input--select"
+                  formControlName="pageSize"
+                  [disabled]="isLoading()"
+                  (change)="onPageSizeChange()"
+                >
+                  @for (size of pageSizeOptions; track size) {
+                    <option [value]="size">{{ size }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="posts-pager">
+                <button
+                  type="button"
+                  class="btn btn--secondary"
+                  [disabled]="isLoading() || !result()?.hasPreviousPage"
+                  (click)="goToPrevious()"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--secondary"
+                  [disabled]="isLoading() || !result()?.hasNextPage"
+                  (click)="goToNext()"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        }
       </footer>
     </section>
   `,

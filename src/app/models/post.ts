@@ -1,17 +1,17 @@
-export type PostContentPayload = {
+export type UpdatePostPayload = {
   title: string;
   body: string;
 };
 
-export type UpdatePostPayload = PostContentPayload;
-
-export type CreatePostPayload = PostContentPayload;
+export type CreatePostPayload = {
+  title: string;
+};
 
 export const POST_TITLE_MAX_LENGTH = 75;
 export const POST_BODY_MAX_LENGTH = 500;
 
-export function normalizePostTitle(title: string): string {
-  const unified = title.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+export function normalizePostTitle(title: string | null | undefined): string {
+  const unified = (title ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const firstLineBreak = unified.indexOf('\n');
 
   if (firstLineBreak === -1) {
@@ -21,12 +21,16 @@ export function normalizePostTitle(title: string): string {
   return unified.slice(0, firstLineBreak + 1) + unified.slice(firstLineBreak + 1).replace(/\n/g, '');
 }
 
+export function normalizePostBody(body: string | null | undefined): string {
+  return body ?? '';
+}
+
 export type HashtagTextSegment = {
   highlighted: boolean;
   text: string;
 };
 
-export function parseHashtagSegments(text: string): HashtagTextSegment[] {
+export function parseHashtagSegments(text: string | null | undefined): HashtagTextSegment[] {
   if (!text) {
     return [];
   }
@@ -65,9 +69,9 @@ export type PlatformType = (typeof PLATFORM_TYPES)[number]['value'];
 
 export const POST_SORT_BY_OPTIONS = [
   { value: 'Id', label: 'ID' },
-  { value: 'CreatedBy', label: 'Created by' },
+  { value: 'CreatedAt', label: 'Created at' },
   { value: 'Status', label: 'Status' },
-  { value: 'UpdatedBy', label: 'Updated by' },
+  { value: 'UpdatedAt', label: 'Updated at' },
 ] as const;
 export type PostSortBy = (typeof POST_SORT_BY_OPTIONS)[number]['value'];
 
@@ -85,10 +89,10 @@ export type PostsFilterParams = {
 
 export type PostItem = {
   id: number;
-  title: string;
-  promptText: string;
+  title: string | null;
+  promptText: string | null;
   userId: string;
-  body: string;
+  body: string | null;
   status: string;
   createdAt: string;
 };

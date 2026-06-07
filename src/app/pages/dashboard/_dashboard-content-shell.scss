@@ -46,10 +46,46 @@
   color: var(--mat-sys-on-surface);
 }
 
+@mixin content-host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+}
+
 @mixin content-status {
   margin: var(--space-sm) 0 0;
   color: var(--mat-sys-on-surface-variant);
   font-size: var(--text-body-sm);
+}
+
+@mixin posts-status {
+  @include content-status;
+
+  &--error {
+    color: var(--mat-sys-error);
+  }
+}
+
+@mixin status-pill($font-size: 0.75rem, $padding: 0.2rem 0.65rem) {
+  flex-shrink: 0;
+  padding: $padding;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  color: var(--mat-sys-primary);
+  font-size: $font-size;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@mixin meta-strong {
+  strong {
+    color: var(--mat-sys-on-surface);
+    font-weight: var(--font-weight-semibold);
+  }
 }
 
 @mixin elevated-panel {

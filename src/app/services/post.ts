@@ -75,4 +75,10 @@ export class PostService {
       withCredentials: true,
     });
   }
+
+  deletePost(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.postsUrl}/${id}`, {
+      withCredentials: true,
+    });
+  }
 }

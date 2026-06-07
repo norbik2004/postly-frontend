@@ -255,6 +255,214 @@
   margin-left: 0.25rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+.notifications-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  &__icon {
+    font-size: 1.375rem;
+    transform-origin: top center;
+    transition: color 0.2s ease;
+  }
+
+  &:hover &__icon,
+  &:focus-visible &__icon {
+    color: var(--mat-sys-primary);
+    animation: bell-swing 0.85s ease-in-out 1;
+  }
+}
+
+@keyframes bell-swing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(14deg);
+  }
+
+  75% {
+    transform: rotate(-14deg);
+  }
+}
+
+.user-menu {
+  position: relative;
+  flex-shrink: 0;
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 2.75rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    border: 1px solid color-mix(in srgb, var(--border-subtle) 80%, transparent);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--mat-sys-surface) 92%, transparent);
+    color: var(--mat-sys-on-surface);
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: color-mix(in srgb, var(--mat-sys-primary) 28%, var(--border-subtle));
+      background: #fff;
+      box-shadow: 0 4px 14px color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    }
+  }
+
+  &__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--mat-sys-primary) 78%, #fff),
+      color-mix(in srgb, var(--mat-sys-primary) 42%, var(--mat-sys-surface-container-high))
+    );
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.03em;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent);
+  }
+
+  &__identity {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+    text-align: left;
+  }
+
+  &__name {
+    overflow: hidden;
+    color: var(--mat-sys-on-surface);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__email {
+    overflow: hidden;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: var(--mat-sys-on-surface-variant);
+    transition: transform 0.2s ease;
+  }
+
+  &.is-open &__chevron {
+    transform: rotate(180deg);
+  }
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 5;
+    display: none;
+    min-width: 12.5rem;
+    padding: 0.375rem;
+    border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
+    border-radius: var(--radius-md);
+    background: var(--mat-sys-surface);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-on-surface) 14%, transparent);
+  }
+
+  &.is-open &__panel {
+    display: grid;
+    gap: 0.125rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--mat-sys-on-surface);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+      color: var(--mat-sys-primary);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__item-icon {
+    font-size: 1.125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__item:hover:not(:disabled) &__item-icon,
+  &__item:focus-visible &__item-icon {
+    color: inherit;
+  }
+
+  &__item--danger {
+    color: #c62828;
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: color-mix(in srgb, #c62828 8%, transparent);
+      color: #b71c1c;
+    }
+  }
+}
+
 .nav-drawer-head,
 .nav-close {
   display: none;
@@ -263,7 +471,10 @@
 .brand:focus-visible,
 .menu-toggle:focus-visible,
 .nav-close:focus-visible,
-.nav-link:focus-visible {
+.nav-link:focus-visible,
+.notifications-btn:focus-visible,
+.user-menu__trigger:focus-visible,
+.user-menu__item:focus-visible {
   outline: 2px solid var(--mat-sys-primary);
   outline-offset: 3px;
 }
@@ -389,6 +600,43 @@
     min-width: 0;
     margin: 0.5rem 0 0;
   }
+
+  .header-actions {
+    width: 100%;
+    margin: 0.5rem 0 0;
+    gap: 0.625rem;
+  }
+
+  .notifications-btn {
+    flex-shrink: 0;
+  }
+
+  .user-menu {
+    flex: 1;
+    min-width: 0;
+
+    &__trigger {
+      width: 100%;
+      padding: 0.375rem 0.75rem 0.375rem 0.375rem;
+    }
+
+    &__identity {
+      flex: 1;
+    }
+
+    &__panel {
+      position: static;
+      display: none;
+      width: 100%;
+      min-width: 0;
+      margin-top: 0.375rem;
+      box-shadow: none;
+    }
+
+    &.is-open &__panel {
+      display: grid;
+    }
+  }
 }
 
 @media (min-width: 64rem) {
@@ -426,6 +674,14 @@
     padding-inline: 2rem;
     margin-left: 0.75rem;
   }
+
+  .header-actions {
+    margin-left: 0.75rem;
+  }
+
+  .user-menu__identity {
+    max-width: 10rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -438,7 +694,9 @@
   .nav-close,
   .nav,
   .nav-link,
-  .nav-link::after {
+  .nav-link::after,
+  .notifications-btn__icon {
     transition: none;
+    animation: none !important;
   }
 }

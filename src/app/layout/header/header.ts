@@ -1,7 +1,6 @@
 import { Component, HostListener, Input, OnDestroy, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { catchError, filter, finalize, of } from 'rxjs';
-import { AuthService } from '../../services/auth';
+import { filter } from 'rxjs';
 import { SessionService } from '../../services/session';
 
 type HeaderLink = {
@@ -85,13 +84,7 @@ const LINKS: readonly HeaderLink[] = [
             </a>
           }
           @if (session.loggedIn()) {
-            @if (isHomeRoute()) {
-              <a [routerLink]="'/dashboard'" class="btn btn--secondary" (click)="closeMenu()">Dashboard</a>
-            } @else {
-              <button type="button" class="btn btn--secondary" (click)="logout()">
-                Log out
-              </button>
-            }
+            <a [routerLink]="'/dashboard'" class="btn btn--secondary" (click)="closeMenu()">Dashboard</a>
           } @else {
             <a [routerLink]="actionRoute" class="btn btn--secondary" (click)="closeMenu()">
               {{ actionLabel }}
@@ -112,7 +105,6 @@ const LINKS: readonly HeaderLink[] = [
   `,
 })
 export class Header implements OnDestroy {
-  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   protected readonly session = inject(SessionService);
 
@@ -124,8 +116,6 @@ export class Header implements OnDestroy {
   @Input() brandRoute = '/';
   protected readonly menuOpen = signal(false);
   protected readonly scrolled = signal(false);
-  protected readonly isLoggingOut = signal(false);
-  protected readonly isHomeRoute = signal(false);
 
   private readonly onScroll = (): void => {
     this.scrolled.set(window.scrollY > 12);
@@ -136,9 +126,7 @@ export class Header implements OnDestroy {
     window.addEventListener('scroll', this.onScroll, { passive: true });
     this.session.checkOnce().subscribe();
 
-    this.isHomeRoute.set(this.router.url === '/' || this.router.url === '');
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      this.isHomeRoute.set(this.router.url === '/' || this.router.url === '');
       this.onScroll();
     });
   }
@@ -158,21 +146,6 @@ export class Header implements OnDestroy {
 
   protected closeMenu(): void {
     this.setMenuOpen(false);
-  }
-
-  protected logout(): void {
-    this.isLoggingOut.set(true);
-    this.authService
-      .logout()
-      .pipe(
-        catchError(() => of(null)),
-        finalize(() => this.isLoggingOut.set(false))
-      )
-      .subscribe(() => {
-        this.session.setLoggedOut();
-        this.closeMenu();
-        void this.router.navigateByUrl('/login');
-      });
   }
 
   protected go(event: Event, id: string): void {

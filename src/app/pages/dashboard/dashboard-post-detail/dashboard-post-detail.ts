@@ -3,11 +3,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Component, DestroyRef, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EMPTY, finalize, map, switchMap } from 'rxjs';
 import { toApplicationError } from '../../../models/application-error';
 import {
   normalizePostTitle,
+  normalizePostBody,
   parseHashtagSegments,
   POST_BODY_MAX_LENGTH,
   POST_TITLE_MAX_LENGTH,
@@ -39,30 +40,46 @@ type PostForm = FormGroup<{
     <section class="dashboard-content-page post-detail" aria-labelledby="post-detail-title">
       <header class="post-detail__header">
         <div class="post-detail__top">
-          <div class="post-detail__nav">
-            <a
-              [routerLink]="['/dashboard/posts']"
-              [queryParams]="postsReturnQueryParams()"
-              class="section-eyebrow post-detail__eyebrow"
-            >
-              ← Back to posts
-            </a>
-            <p class="post-detail__save-status" aria-live="polite">{{ saveMessage() }}</p>
-          </div>
+          <a
+            [routerLink]="['/dashboard/posts']"
+            [queryParams]="postsReturnQueryParams()"
+            class="section-eyebrow post-detail__eyebrow"
+          >
+            ← Back to posts
+          </a>
 
           @if (post(); as item) {
-            <div class="post-detail__meta-row">
-              <span class="post-detail__status-badge">{{ item.status }}</span>
-              <p class="post-detail__meta">
-                <time [attr.datetime]="item.createdAt">{{ item.createdAt | date: 'medium' }}</time>
-              </p>
+            <div class="post-detail__top-end">
+              <div class="post-detail__meta-group">
+                <span class="post-detail__status-badge">{{ item.status }}</span>
+                <p class="post-detail__meta">
+                  <time [attr.datetime]="item.createdAt">{{ item.createdAt | date: 'medium' }}</time>
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="post-detail__delete-btn"
+                [class.post-detail__delete-btn--active]="deleteConfirmOpen()"
+                matTooltip="Delete post"
+                matTooltipPosition="below"
+                aria-label="Delete post"
+                [attr.aria-expanded]="deleteConfirmOpen()"
+                aria-controls="post-delete-confirm"
+                [disabled]="isActionLocked()"
+                (click)="requestDelete()"
+              >
+                <span class="material-icons" aria-hidden="true">delete</span>
+              </button>
             </div>
           }
         </div>
 
+        <p class="post-detail__save-status" aria-live="polite">{{ saveMessage() }}</p>
+
         @if (post(); as item) {
           @if (editingField() === 'title') {
-            <div class="post-detail__edit-panel post-detail__three-quarters" [formGroup]="form">
+            <div class="post-detail__edit-panel" [formGroup]="form">
               <textarea
                 #titleInput
                 id="post-title"
@@ -114,20 +131,80 @@ type PostForm = FormGroup<{
 
       @if (post(); as item) {
         <div class="post-detail__sections">
-          @if (item.promptText) {
-            <section class="post-detail__content" aria-labelledby="post-detail-prompt">
-              <p id="post-detail-prompt" class="section-eyebrow post-detail__content-label">Prompt</p>
-              <p class="post-detail__body-text post-detail__half">
-                <ng-container *ngTemplateOutlet="hashtagText; context: { text: item.promptText }" />
-              </p>
+          @if (deleteConfirmOpen()) {
+            <section
+              #deleteConfirm
+              id="post-delete-confirm"
+              class="post-detail__delete-confirm"
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="post-delete-title"
+              aria-describedby="post-delete-desc"
+            >
+              <div class="post-detail__delete-confirm-main">
+                <div class="post-detail__delete-confirm-badge" aria-hidden="true">
+                  <span class="material-icons">delete_outline</span>
+                </div>
+                <div class="post-detail__delete-confirm-copy">
+                  <p class="post-detail__delete-confirm-eyebrow">Confirm deletion</p>
+                  <h2 id="post-delete-title" class="post-detail__delete-confirm-title">
+                    Delete “{{ item.title || 'Untitled' }}”?
+                  </h2>
+                  <p id="post-delete-desc" class="post-detail__delete-confirm-desc">
+                    This post will be permanently removed from your workspace. This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div class="post-detail__delete-confirm-actions">
+                <button
+                  type="button"
+                  class="btn btn--secondary btn--compact"
+                  [disabled]="isDeleting()"
+                  (click)="cancelDelete()"
+                >
+                  Keep post
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--danger btn--compact"
+                  [disabled]="isDeleting()"
+                  (click)="confirmDelete()"
+                >
+                  {{ isDeleting() ? 'Deleting…' : 'Delete post' }}
+                </button>
+              </div>
             </section>
           }
 
-          <section class="post-detail__content" aria-labelledby="post-detail-body">
-            <p id="post-detail-body" class="section-eyebrow post-detail__content-label">Content</p>
+          @if (item.promptText) {
+            <section class="post-detail__card post-detail__card--prompt" aria-labelledby="post-detail-prompt">
+              <div class="post-detail__card-head">
+                <p id="post-detail-prompt" class="post-detail__card-label">Prompt</p>
+                <p class="post-detail__card-hint">Original idea used to generate this post</p>
+              </div>
+              <div class="post-detail__card-body">
+                <p class="post-detail__body-text post-detail__body-text--prompt">
+                  <ng-container *ngTemplateOutlet="hashtagText; context: { text: item.promptText }" />
+                </p>
+              </div>
+            </section>
+          }
+
+          <section class="post-detail__card post-detail__card--content" aria-labelledby="post-detail-body">
+            <div class="post-detail__card-head post-detail__card-head--row">
+              <div>
+                <p id="post-detail-body" class="post-detail__card-label">Content</p>
+                <p class="post-detail__card-hint">What will be published</p>
+              </div>
+              @if (editingField() !== 'body') {
+                <ng-container
+                  *ngTemplateOutlet="editIcon; context: { $implicit: 'body', label: 'Edit content' }"
+                />
+              }
+            </div>
 
             @if (editingField() === 'body') {
-              <div class="post-detail__edit-panel post-detail__half" [formGroup]="form">
+              <div class="post-detail__edit-panel" [formGroup]="form">
                 <div class="post-detail__body-editor">
                   <div
                     #bodyHighlight
@@ -191,9 +268,6 @@ type PostForm = FormGroup<{
                       }
                     </div>
                   </div>
-                  @if (form.controls.body.touched && form.controls.body.hasError('required')) {
-                    <p id="post-body-error" class="field__error" role="alert">Content is required.</p>
-                  }
                   @if (form.controls.body.touched && form.controls.body.hasError('maxlength')) {
                     <p id="post-body-error" class="field__error" role="alert">
                       Content cannot exceed {{ bodyMaxLength }} characters.
@@ -205,19 +279,16 @@ type PostForm = FormGroup<{
                 </div>
               </div>
             } @else {
-              <div class="post-detail__body-row">
+              <div class="post-detail__card-body">
                 @if (item.body) {
-                  <p class="post-detail__body-text post-detail__half">
+                  <p class="post-detail__body-text">
                     <ng-container *ngTemplateOutlet="hashtagText; context: { text: item.body }" />
                   </p>
                 } @else {
-                  <p class="post-detail__body-text post-detail__body-text--empty post-detail__half">
-                    No content yet.
+                  <p class="post-detail__body-text post-detail__body-text--empty">
+                    No content yet. Click the edit icon to add your post body.
                   </p>
                 }
-                <ng-container
-                  *ngTemplateOutlet="editIcon; context: { $implicit: 'body', label: 'Edit content' }"
-                />
               </div>
             }
           </section>
@@ -245,9 +316,9 @@ type PostForm = FormGroup<{
         [attr.aria-label]="label"
         matTooltip="Edit"
         matTooltipPosition="below"
-        [matTooltipDisabled]="isEditLocked()"
-        [class.edit-icon--disabled]="isEditLocked()"
-        [attr.aria-disabled]="isEditLocked() ? true : null"
+        [matTooltipDisabled]="isActionLocked()"
+        [class.edit-icon--disabled]="isActionLocked()"
+        [attr.aria-disabled]="isActionLocked() ? true : null"
         (click)="onEditIconActivate($event, field)"
         (keydown.enter)="onEditIconActivate($event, field)"
         (keydown.space)="onEditIconActivate($event, field)"
@@ -275,12 +346,14 @@ type PostForm = FormGroup<{
 })
 export class DashboardPostDetail {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly postService = inject(PostService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly titleInput = viewChild<ElementRef<HTMLTextAreaElement>>('titleInput');
   private readonly bodyInput = viewChild<ElementRef<HTMLTextAreaElement>>('bodyInput');
   private readonly bodyHighlight = viewChild<ElementRef<HTMLDivElement>>('bodyHighlight');
   private readonly emojiAnchor = viewChild<ElementRef<HTMLElement>>('emojiAnchor');
+  private readonly deleteConfirmPanel = viewChild<ElementRef<HTMLElement>>('deleteConfirm');
   private saveMessageTimeout: ReturnType<typeof setTimeout> | undefined;
   private bodyInputObserver: ResizeObserver | undefined;
 
@@ -295,7 +368,7 @@ export class DashboardPostDetail {
     }),
     body: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(POST_BODY_MAX_LENGTH)],
+      validators: [Validators.maxLength(POST_BODY_MAX_LENGTH)],
     }),
   });
 
@@ -303,6 +376,8 @@ export class DashboardPostDetail {
   protected readonly editingField = signal<EditableField | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly isSaving = signal(false);
+  protected readonly isDeleting = signal(false);
+  protected readonly deleteConfirmOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly saveMessage = signal<string | null>(null);
   protected readonly emojiPickerOpen = signal(false);
@@ -350,6 +425,11 @@ export class DashboardPostDetail {
       return;
     }
 
+    if (this.deleteConfirmOpen() && !this.isDeleting()) {
+      this.cancelDelete();
+      return;
+    }
+
     if (this.editingField() !== null && !this.isSaving()) {
       this.cancelEdit();
     }
@@ -372,12 +452,62 @@ export class DashboardPostDetail {
     this.emojiPickerOpen.set(false);
   }
 
-  protected isEditLocked(): boolean {
-    return this.editingField() !== null || this.isSaving();
+  protected isActionLocked(): boolean {
+    return this.editingField() !== null || this.isSaving() || this.isDeleting() || this.deleteConfirmOpen();
+  }
+
+  protected requestDelete(): void {
+    if (this.isActionLocked()) {
+      return;
+    }
+
+    this.clearSaveMessage();
+    this.errorMessage.set(null);
+    this.deleteConfirmOpen.set(true);
+    queueMicrotask(() => {
+      this.deleteConfirmPanel()?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    });
+  }
+
+  protected cancelDelete(): void {
+    if (this.isDeleting()) {
+      return;
+    }
+
+    this.deleteConfirmOpen.set(false);
+  }
+
+  protected confirmDelete(): void {
+    const item = this.post();
+    if (!item || this.isDeleting()) {
+      return;
+    }
+
+    this.isDeleting.set(true);
+    this.errorMessage.set(null);
+    this.clearSaveMessage();
+
+    this.postService
+      .deletePost(item.id)
+      .pipe(finalize(() => this.isDeleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard/posts'], {
+            queryParams: this.postsReturnQueryParams(),
+          });
+        },
+        error: (error) => {
+          this.deleteConfirmOpen.set(false);
+          this.errorMessage.set(toApplicationError(error, 'Could not delete post.').description);
+        },
+      });
   }
 
   protected onEditIconActivate(event: Event, field: EditableField): void {
-    if (this.isEditLocked()) {
+    if (this.isActionLocked()) {
       return;
     }
 
@@ -460,7 +590,8 @@ export class DashboardPostDetail {
 
     const title =
       field === 'title' ? this.clampTitle(control.value.trim()) : this.clampTitle(item.title);
-    const body = field === 'body' ? this.clampBody(control.value.trim()) : this.clampBody(item.body);
+    const body =
+      field === 'body' ? this.clampBody(control.value.trim()) : this.clampBody(item.body);
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
@@ -508,6 +639,8 @@ export class DashboardPostDetail {
     this.disconnectBodyInputObserver();
     this.post.set(null);
     this.editingField.set(null);
+    this.deleteConfirmOpen.set(false);
+    this.isDeleting.set(false);
     this.clearSaveMessage();
     this.form.reset({ title: '', body: '' });
   }
@@ -515,7 +648,11 @@ export class DashboardPostDetail {
   private setPost(item: PostItem): void {
     const title = this.clampTitle(item.title);
     const body = this.clampBody(item.body);
-    this.post.set({ ...item, title, body });
+    this.post.set({
+      ...item,
+      title: title || null,
+      body: body || null,
+    });
     this.form.reset({ title, body });
   }
 
@@ -599,12 +736,12 @@ export class DashboardPostDetail {
     });
   }
 
-  private clampTitle(value: string): string {
+  private clampTitle(value: string | null | undefined): string {
     return normalizePostTitle(value).slice(0, POST_TITLE_MAX_LENGTH);
   }
 
-  private clampBody(value: string): string {
-    return value.slice(0, POST_BODY_MAX_LENGTH);
+  private clampBody(value: string | null | undefined): string {
+    return normalizePostBody(value).slice(0, POST_BODY_MAX_LENGTH);
   }
 
   private showSaveMessage(message: string): void {

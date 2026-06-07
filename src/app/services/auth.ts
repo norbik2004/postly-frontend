@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { parseUserAccount, type UserAccount } from '../models/user-account';
 
 export type LoginRequest = {
   email: string;
@@ -32,6 +33,19 @@ export class AuthService {
 
   getSession(): Observable<unknown> {
     return this.http.get(this.sessionUrl, { withCredentials: true });
+  }
+
+  getAccount(): Observable<UserAccount> {
+    return this.http.get<unknown>(this.sessionUrl, { withCredentials: true }).pipe(
+      map((response) => {
+        const account = parseUserAccount(response);
+        if (!account) {
+          throw new Error('Invalid account response.');
+        }
+
+        return account;
+      })
+    );
   }
 
   logout(): Observable<unknown> {
