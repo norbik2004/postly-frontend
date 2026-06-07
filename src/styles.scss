@@ -70,14 +70,17 @@ video {
 }
 
 body.nav-open,
-body.dashboard-nav-open,
-body.posts-filters-open {
+body.dashboard-nav-open {
   overflow: hidden;
 }
 
 @media (max-width: 48rem) {
+  body.posts-filters-open {
+    overflow: hidden;
+  }
+
   body.posts-filters-open .dashboard-layout__main {
-    z-index: 250;
+    z-index: var(--drawer-z-panel-raised);
   }
 }
 

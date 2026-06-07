@@ -1,4 +1,5 @@
 @use '../../../../styles/brand' as brand;
+@use '../../../../styles/drawer' as drawer;
 
 
 
@@ -669,231 +670,30 @@
 
 
   .dashboard-sidebar__menu-toggle {
-
     display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 2.5rem;
-
-    height: 2.5rem;
-
-    padding: 0;
-
-    border: 0;
-
-    border-radius: 0.75rem;
-
-    background: transparent;
-
-    color: var(--mat-sys-on-surface);
-
-    cursor: pointer;
-
-    transition: background-color 0.2s ease, color 0.2s ease;
-
-
-
-    &:hover,
-
-    &:focus-visible {
-
-      background: color-mix(in srgb, var(--mat-sys-surface-container) 70%, transparent);
-
-      color: var(--mat-sys-primary);
-
-    }
-
+    @include drawer.menu-toggle;
   }
-
-
 
   .menu-icon {
-
-    position: relative;
-
-    display: block;
-
-    width: 1.25rem;
-
-    height: 2px;
-
-    background: currentColor;
-
-    border-radius: 1px;
-
-
-
-    &::before,
-
-    &::after {
-
-      content: '';
-
-      position: absolute;
-
-      left: 0;
-
-      width: 100%;
-
-      height: 2px;
-
-      background: currentColor;
-
-      border-radius: 1px;
-
-      transition: transform 0.2s ease, top 0.2s ease;
-
-    }
-
-
-
-    &::before {
-
-      top: -7px;
-
-    }
-
-
-
-    &::after {
-
-      top: 7px;
-
-    }
-
-
-
-    &.is-open {
-
-      background: transparent;
-
-
-
-      &::before {
-
-        top: 0;
-
-        transform: rotate(45deg);
-
-      }
-
-
-
-      &::after {
-
-        top: 0;
-
-        transform: rotate(-45deg);
-
-      }
-
-    }
-
+    @include drawer.menu-icon;
   }
-
-
 
   .dashboard-sidebar__backdrop {
-
-    display: block;
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 210;
-
-    margin: 0;
-
-    padding: 0;
-
-    border: 0;
-
-    background: color-mix(in srgb, var(--mat-sys-on-surface) 48%, transparent);
-
-    backdrop-filter: blur(8px);
-
-    -webkit-backdrop-filter: blur(8px);
-
-    cursor: pointer;
-
+    @include drawer.backdrop;
   }
-
-
 
   .dashboard-sidebar__panel {
-
-    position: fixed;
-
-    top: 0;
-
-    right: 0;
-
-    bottom: 0;
-
-    z-index: 220;
-
+    @include drawer.panel-slide($blur-panel: false);
     flex: none;
-
     gap: 0;
-
-    width: min(20rem, 90vw);
-
-    padding: 0.875rem 1rem 1.25rem;
-
-    border-left: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
-
-    background: var(--mat-sys-surface);
-
-    box-shadow:
-
-      -24px 0 48px color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent),
-
-      var(--mat-sys-level3);
-
-    transform: translateX(100%);
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-    transition: transform 0.22s ease, visibility 0.22s ease;
-
   }
-
-
 
   .dashboard-sidebar.is-menu-open .dashboard-sidebar__panel {
-
-    transform: translateX(0);
-
-    visibility: visible;
-
-    pointer-events: auto;
-
+    @include drawer.panel-open;
   }
 
-
-
   .dashboard-sidebar__drawer-head {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: var(--space-sm);
-
-    margin-bottom: var(--space-sm);
-
-    padding-bottom: 0.25rem;
-
+    @include drawer.head;
   }
 
 
@@ -907,97 +707,11 @@
 
 
   .dashboard-sidebar__close {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 2.5rem;
-
-    height: 2.5rem;
-
-    padding: 0;
-
-    border: 0;
-
-    border-radius: 0.75rem;
-
-    background: transparent;
-
-    color: var(--mat-sys-on-surface);
-
-    cursor: pointer;
-
-    transition: background-color 0.2s ease, color 0.2s ease;
-
-
-
-    &:hover,
-
-    &:focus-visible {
-
-      background: color-mix(in srgb, var(--mat-sys-surface-container) 80%, transparent);
-
-      color: var(--mat-sys-primary);
-
-    }
-
+    @include drawer.close-button;
   }
 
-
-
   .close-icon {
-
-    position: relative;
-
-    display: block;
-
-    width: 1.25rem;
-
-    height: 1.25rem;
-
-
-
-    &::before,
-
-    &::after {
-
-      content: '';
-
-      position: absolute;
-
-      left: 50%;
-
-      top: 50%;
-
-      width: 100%;
-
-      height: 2px;
-
-      background: currentColor;
-
-      border-radius: 1px;
-
-    }
-
-
-
-    &::before {
-
-      transform: translate(-50%, -50%) rotate(45deg);
-
-    }
-
-
-
-    &::after {
-
-      transform: translate(-50%, -50%) rotate(-45deg);
-
-    }
-
+    @include drawer.close-icon;
   }
 
 
@@ -1012,13 +726,7 @@
 
 
 
-  .dashboard-sidebar.is-menu-open .dashboard-sidebar__menu-toggle {
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-  }
+  @include drawer.hide-toggle-when-open('.dashboard-sidebar.is-menu-open', '.dashboard-sidebar__menu-toggle');
 
 
 
@@ -1118,22 +826,8 @@
 
 
 
-@media (prefers-reduced-motion: reduce) {
-
-  .dashboard-sidebar__notifications-icon,
-
-  .menu-icon::before,
-
-  .menu-icon::after,
-
-  .dashboard-sidebar__panel {
-
-    transition: none;
-
-    animation: none !important;
-
-  }
-
-}
+@include drawer.motion-safe(
+  '.dashboard-sidebar__notifications-icon, .menu-icon::before, .menu-icon::after, .dashboard-sidebar__panel'
+);
 
 

@@ -1,4 +1,5 @@
 @use '../../../../styles/auth-page' as auth;
+@use '../../../../styles/drawer' as drawer;
 @use '../dashboard-content-shell' as shell;
 
 $posts-green: #2e7d32;
@@ -174,11 +175,66 @@ $panel-divider: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transpare
   }
 }
 
-.posts-filters__mobile-bar,
 .posts-filters__backdrop,
 .posts-filters__drawer-head,
 .posts-filters__close {
   display: none;
+}
+
+.posts-filters__toolbar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.posts-filters__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--mat-sys-surface-container-low) 55%, #fff);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 35%, var(--border-subtle));
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, #fff);
+    color: var(--mat-sys-primary);
+  }
+
+  &.is-active {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 40%, var(--border-subtle));
+    background: color-mix(in srgb, var(--mat-sys-primary) 10%, #fff);
+    color: var(--mat-sys-primary);
+  }
+}
+
+.posts-filters__toggle-icon {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.posts-filters__active-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+  color: var(--mat-sys-primary);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .posts-filters {
@@ -476,6 +532,12 @@ $panel-divider: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transpare
   }
 }
 
+@media (min-width: 49rem) {
+  .posts-filters:not(.is-open) {
+    display: none;
+  }
+}
+
 @media (max-width: 72rem) {
   .posts-filters__row--meta {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -488,106 +550,37 @@ $panel-divider: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transpare
 }
 
 @media (max-width: 48rem) {
-  .posts-filters__mobile-bar {
-    display: flex;
-    align-items: center;
-    width: 100%;
-  }
-
   .posts-filters__toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
     min-height: 2.75rem;
     padding: 0.5rem 1rem;
-    border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--mat-sys-surface-container-low) 55%, #fff);
-    color: var(--mat-sys-on-surface);
-    font: inherit;
     font-size: 0.9375rem;
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.2;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease;
-
-    &:hover,
-    &:focus-visible {
-      border-color: color-mix(in srgb, var(--mat-sys-primary) 35%, var(--border-subtle));
-      background: color-mix(in srgb, var(--mat-sys-primary) 8%, #fff);
-      color: var(--mat-sys-primary);
-    }
   }
 
   .posts-filters__toggle-icon {
     font-size: 1.25rem;
-    line-height: 1;
-  }
-
-  .posts-filters__active-badge {
-    padding: 0.125rem 0.5rem;
-    border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
-    color: var(--mat-sys-primary);
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
   }
 
   .posts-filters__backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 240;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: color-mix(in srgb, var(--mat-sys-on-surface) 48%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    cursor: pointer;
+    @include drawer.backdrop(var(--drawer-z-backdrop-raised));
   }
 
   .posts-filters {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 250;
+    @include drawer.panel-slide(
+      $z-index: var(--drawer-z-panel-raised),
+      $padding: 0,
+      $blur-panel: true
+    );
+    @include drawer.panel-safe-padding;
     display: flex;
     flex-direction: column;
     gap: 0;
-    width: min(20rem, 90vw);
-    margin: 0;
-    padding:
-      max(0.875rem, env(safe-area-inset-top))
-      max(1rem, env(safe-area-inset-right))
-      max(1rem, env(safe-area-inset-bottom))
-      1rem;
     border: none;
     border-bottom: none;
-    border-left: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
     border-radius: 0;
-    background: var(--mat-sys-surface);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    box-shadow:
-      -24px 0 48px color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent),
-      var(--mat-sys-level3);
-    transform: translateX(100%);
-    visibility: hidden;
-    pointer-events: none;
-    transition: transform 0.22s ease, visibility 0.22s ease;
     overflow: hidden;
 
     &.is-open {
-      transform: translateX(0);
-      visibility: visible;
-      pointer-events: auto;
+      @include drawer.panel-open;
     }
 
     .field {
@@ -637,13 +630,7 @@ $panel-divider: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transpare
   }
 
   .posts-filters__drawer-head {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-    padding-bottom: 0.25rem;
+    @include drawer.head;
   }
 
   .posts-filters__drawer-title {
@@ -655,51 +642,11 @@ $panel-divider: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transpare
   }
 
   .posts-filters__close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0;
-    border: 0;
-    border-radius: 0.75rem;
-    background: transparent;
-    color: var(--mat-sys-on-surface);
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-
-    &:hover,
-    &:focus-visible {
-      background: color-mix(in srgb, var(--mat-sys-surface-container) 80%, transparent);
-      color: var(--mat-sys-primary);
-    }
+    @include drawer.close-button;
   }
 
-  .posts-filters__close-icon {
-    position: relative;
-    display: block;
-    width: 1.25rem;
-    height: 1.25rem;
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 100%;
-      height: 2px;
-      background: currentColor;
-      border-radius: 1px;
-    }
-
-    &::before {
-      transform: translate(-50%, -50%) rotate(45deg);
-    }
-
-    &::after {
-      transform: translate(-50%, -50%) rotate(-45deg);
-    }
+  .close-icon {
+    @include drawer.close-icon;
   }
 
   .posts-filters__grid {
@@ -745,15 +692,10 @@ $panel-divider: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transpare
     }
   }
 
-  .dashboard-posts__intro:has(.posts-filters.is-open) .posts-filters__toggle {
-    visibility: hidden;
-    pointer-events: none;
-  }
+  @include drawer.hide-toggle-when-open(
+    '.dashboard-posts__intro:has(.posts-filters.is-open)',
+    '.posts-filters__toggle'
+  );
 }
 
-
-@media (prefers-reduced-motion: reduce) {
-  .posts-filters {
-    transition: none;
-  }
-}
+@include drawer.motion-safe('.posts-filters');

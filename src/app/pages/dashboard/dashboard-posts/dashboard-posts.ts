@@ -60,10 +60,11 @@ type PostsForm = FormGroup<{
           </div>
         </header>
 
-        <div class="posts-filters__mobile-bar">
+        <div class="posts-filters__toolbar">
           <button
             type="button"
             class="posts-filters__toggle"
+            [class.is-active]="filtersOpen()"
             [attr.aria-expanded]="filtersOpen()"
             aria-controls="posts-filters-panel"
             (click)="toggleFilters()"
@@ -96,7 +97,7 @@ type PostsForm = FormGroup<{
           <div class="posts-filters__drawer-head">
             <h2 class="posts-filters__drawer-title">Filters</h2>
             <button type="button" class="posts-filters__close" aria-label="Close filters" (click)="closeFilters()">
-              <span class="posts-filters__close-icon" aria-hidden="true"></span>
+              <span class="close-icon" aria-hidden="true"></span>
             </button>
           </div>
 
@@ -560,6 +561,7 @@ export class DashboardPosts {
 
   private setFiltersOpen(open: boolean): void {
     this.filtersOpen.set(open);
-    document.body.classList.toggle('posts-filters-open', open);
+    const lockScroll = open && window.matchMedia('(max-width: 48rem)').matches;
+    document.body.classList.toggle('posts-filters-open', lockScroll);
   }
 }

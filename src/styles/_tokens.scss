@@ -56,6 +56,11 @@ html {
   --container-max: 80rem;
   --container-padding: clamp(1.25rem, 4vw, 3rem);
   --header-offset: 4.25rem;
+  --drawer-width: min(20rem, 90vw);
+  --drawer-z-backdrop: 210;
+  --drawer-z-panel: 220;
+  --drawer-z-backdrop-raised: 240;
+  --drawer-z-panel-raised: 250;
 
   /* —— Surfaces & media —— */
   --border-subtle: color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
